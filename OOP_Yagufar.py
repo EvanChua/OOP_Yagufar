@@ -18,4 +18,5 @@ def Storage():
     return render_template('Storage.html', form=form)
 
 if __name__ == '__main__':
+    app.debug = True
     app.run()

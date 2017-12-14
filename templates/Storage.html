@@ -2,41 +2,71 @@
 {% block body %}
 {% from "includes/_formhelper.html" import render_field %}
 
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    <li>{{ form[field_name].label }} {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
-  <h1 style="text-align: center;padding:auto">
+<form method = 'POST' action="">
+
+
+        <div class="portfolioContainer">
+            <h1 style="text-align: center">
                 Item Storage
             </h1>
+            <div class="boxcontainer" style="padding-left: 200px">
+
             <div class="form-group">
-                <div class="col-md-6">
-                    {{ render_field(form.recipientName, class_="form-control") }}
+                <div class="col-md-9" style="padding-bottom:15px">
+                    {{ render_field(form.recipientName, class_="form-control",placeholder="E.g. John") }}
 {#                    <p style="font-size:20px"> Order ID: </p>#}
 {#                    <input class="form-control" id="orderid" type="text" placeholder="Your Order ID *" required data-validation-required-message="Please enter your Order ID.">#}
                 </div>
             </div>
+
             <div class="form-group">
-                <div class="col-md-6">
-                    {{ render_field(form.lockerId,class_='form-control') }}
+                <div class="col-md-9" style="padding-bottom:15px">
+                    {{ render_field(form.lockerId,class_='form-control',placeholder="#1245678") }}
 {#                    <p style="font-size:20px"> Address: </p>#}
 {#                    <input class="form-control" id="address" type="text" placeholder="Your Address *" required data-validation-requierd-message="Please enter your address.">#}
                 </div>
             </div>
+
             <div class="form-group">
-                <div class="col-md-6">
+                <div class="col-md-9" style="padding-bottom:15px">
+                    {{ render_field(form.emailaddress,class_='form-control',placeholder="Email Address") }}
+{#                    <p style="font-size:20px"> Address: </p>#}
+{#                    <input class="form-control" id="address" type="text" placeholder="Your Address *" required data-validation-requierd-message="Please enter your address.">#}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-9" style="padding-bottom:15px">
                     {{ render_field(form.dateofdelivery,class_='form-control',placeholder="DD/MM/YYYY") }}
 {#                    <p style="font-size:20px"> Email: </p>#}
 {#                    <input class="form-control" id="email" type="email" placeholder="Your Email *" required data-validation-required-message="Please enter your email address.">#}
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-md-6">
-                    {{ render_field(form.phonenumber,class_='form-control',placeholder="(+65)") }}
+                <div class="col-md-9" style="padding-bottom:10px">
+                    {{ render_field(form.phonenumber,class_='form-control',placeholder="+65 98765432") }}
 {#                    <p style="font-size:20px"> What item did you order? </p>#}
 {#                    <input class="form-control" id="item" placeholder="Item" required data-validation-required-message="Please enter your email address.">#}
                 </div>
             </div>
-            <div class="form-group col-md-4">
-                <input type="submit" value="Submit" class="btn btn-info"/>
+
+
+            <div class="form-group col-md-9" style="padding-top:20px">
+                 <input type="submit" value=Submit class="btn btn-info"/>
             </div>
+        </div>
         </div>
 
 

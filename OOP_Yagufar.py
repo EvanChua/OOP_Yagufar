@@ -1,14 +1,10 @@
-from flask import Flask, render_template, request
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators
+from flask import Flask, render_template, request, session, flash, request, url_for, redirect
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
 from firebase_admin import credentials, db
 from Storage import Storage
-from flask import Flask, render_template, request, url_for, redirect
-import firebase_admin
 from Users import Users
-from firebase_admin import credentials, db
-from Storage import Storage
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, ValidationError,IntegerField
+
 app = Flask(__name__)
 cred = credentials.Certificate('cred/yagufar-bb205-firebase-adminsdk-p7ypj-a0ee653a2d.json')
 default_app = firebase_admin.initialize_app(cred, {
@@ -27,13 +23,13 @@ class StorageForm(Form):
 
 class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    Password = PasswordField('Password: ', [validators.DataRequired()])
+    password = PasswordField('Password: ', [validators.DataRequired()])
     email_address = StringField('Email Address : ',[validators.DataRequired()])
     phone_number = StringField('Phone Number: ',[validators.DataRequired()])
 
 class Log_InForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    Password = PasswordField('Password: ',[validators.DataRequired()])
+    password = PasswordField('Password: ',[validators.DataRequired()])
 
 class reviewForm(Form):
     stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
@@ -41,6 +37,11 @@ class reviewForm(Form):
 
 class profileForm(Form):
     pass
+
+class RepairForm(Form):
+    chooseService = SelectField('Select A Service',[validators.DataRequired()],choices=[('','Select Here'),('AIRCON',('Air Conditioning'),('PLUMB','Plumbing'))],default="")
+    chooseLocation = TextAreaField('Select A Location',[validators.DataRequired()])
+    chooseRequest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
 
 @app.route('/')
 def home():
@@ -80,8 +81,10 @@ def storage_item():
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
 
-@app.route('/Repair/')
+@app.route('/Repair/', methods=['GET','POST'])
 def Repair():
+    if request.method == 'POST' and Form.validate():
+        return render_template('Repair.html')
     return render_template('Repair.html')
 
 @app.route('/Register/', methods=['GET', 'POST'])
@@ -89,11 +92,10 @@ def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
         username = form.username.data
-        Password = form.Password.data
-        Email_Address = form.Email_address.data
+        password = form.password.data
+        email_address = form.email_address.data
         phone_number = form.phone_number.data
-        s1 = Users(username, Password, Email_Address, phone_number)
-        return render_template('Register.html', form=form)
+        s1 = Users(username, password, phone_number, email_address)
 
     # create the magazine object
         mag_db = root.child('user')
@@ -104,15 +106,41 @@ def Register():
             'email_address': s1.get_email_address(),
 
         })
-        return redirect(url_for('Log_In.html'))
+        return redirect(url_for('Log_In'))
 
     return render_template('Register.html', form=form)
 
 @app.route('/Log_In/',  methods=['GET', 'POST'])
 def Log_In():
+
     form = Log_InForm(request.form)
     if request.method == 'POST' and form.validate():
-        return render_template('Log_In.html', form=form)
+        username = form.username.data
+        password = form.password.data
+
+        ifUserExists = root.child('user').order_by_child('username').equal_to(username).get()
+        if len(ifUserExists) <= 0:
+
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('Log_In.html', form=form)
+        else:
+            for k, v in ifUserExists.items():
+                print(k, v)
+                # print(sha256_crypt.encrypt(password))
+                print(v['username'])
+                print(v['password'])
+
+                if username == v['username'] and password == v['password']:
+                    session['logged_in'] = True
+                    session['username'] = username
+                    return redirect(url_for('home'))
+                else:
+                    error = 'Invalid login'
+                    flash(error, 'danger')
+                    return render_template('Log_In.html', form=form)
+
+
     return render_template('Log_In.html', form=form)
 
 @app.route('/Review/',  methods=['GET', 'POST'])
@@ -135,5 +163,14 @@ def Profile():
 
     return render_template('Profile.html', details = list)
 
+@app.route('/Log_Out/')
+def Log_Out():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('Log_In'))
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.secret_key = 'secret123'
+    app.run()
+

@@ -55,7 +55,7 @@
     {% endif %}
 
     <h1 style="text-align: center;padding:auto">
-        Reviews Jinja
+        Reviews
     </h1>
     <form method="POST" action="">
         <div class="form-group">
@@ -74,13 +74,15 @@
         <div>
 {#            {{ render_field(form.stars, class="acidjs-rating-stars") }}#}
 
-Rating <br/>
+<b>Rating</b> <br/>
+        <div class="acidjs-rating-stars">
             {% for subfield in form.stars %}
                 <tr>
                     <td>{{ subfield }} </td>
                     <td>{{ subfield.label }}</td>
                 </tr>
             {% endfor %}
+        </div>
 
         </div>
 <br/>

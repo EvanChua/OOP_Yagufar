@@ -129,7 +129,7 @@ def Profile():
         eachvalue = details[values]
 
         info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"])
-        info.set_boboid(values)
+        info.set_profileid(values)
         list.append(info)
 
 

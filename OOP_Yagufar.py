@@ -4,6 +4,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 from Storage import Storage
 from Users import Users
+from Review import Review
 
 app = Flask(__name__)
 cred = credentials.Certificate('cred/yagufar-bb205-firebase-adminsdk-p7ypj-a0ee653a2d.json')
@@ -143,10 +144,25 @@ def Log_In():
 
     return render_template('Log_In.html', form=form)
 
+
+
 @app.route('/Review/',  methods=['GET', 'POST'])
-def Review():
+def render_review():
     form = reviewForm(request.form)
+    if request.method == 'POST' and form.validate():
+        review = form.review.data
+        s1 = Review(review)
+        mag_db = root.child("review")
+        mag_db.push({
+            'review': s1.get_review(),
+
+        })
+        return redirect(url_for('Profile'))
+
+
     return render_template('Review.html', form=form)
+
+
 
 @app.route('/Profile/',  methods=['GET', 'POST'])
 def Profile():
@@ -172,5 +188,5 @@ def Log_Out():
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'
+    app.debug = True
     app.run()
-

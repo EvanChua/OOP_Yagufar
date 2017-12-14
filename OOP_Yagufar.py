@@ -5,6 +5,7 @@ from firebase_admin import credentials, db
 from Storage import Storage
 from flask import Flask, render_template, request, url_for, redirect
 import firebase_admin
+from Users import Users
 from firebase_admin import credentials, db
 from Storage import Storage
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, ValidationError,IntegerField
@@ -34,6 +35,12 @@ class Log_InForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     Password = PasswordField('Password: ',[validators.DataRequired()])
 
+class reviewForm(Form):
+    stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
+    review = TextAreaField('Review', [validators.DataRequired()])
+
+class profileForm(Form):
+    pass
 
 @app.route('/')
 def home():
@@ -108,9 +115,25 @@ def Log_In():
         return render_template('Log_In.html', form=form)
     return render_template('Log_In.html', form=form)
 
-@app.route('/Review/')
+@app.route('/Review/',  methods=['GET', 'POST'])
 def Review():
-    return render_template('Review.html')
+    form = reviewForm(request.form)
+    return render_template('Review.html', form=form)
+
+@app.route('/Profile/',  methods=['GET', 'POST'])
+def Profile():
+    # form = profileForm(request.form)
+    details = root.child("user").get()
+    list = []
+    for values in details:
+        eachvalue = details[values]
+
+        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"])
+        info.set_boboid(values)
+        list.append(info)
+
+
+    return render_template('Profile.html', details = list)
 
 if __name__ == '__main__':
     app.run(debug=True)

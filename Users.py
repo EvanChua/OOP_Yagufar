@@ -25,31 +25,31 @@ class Users:
     def set_email_address(self, email_address):
         self.__email_address = email_address
 
-class Customer(Users):
-    def __init__(self, username, password, phone_no, email, address):
-        Users.__init__(self, username, password, phone_no, email)
-        self.__address = address
-
-    def get_addresss(self):
-        return self.__address
-
-    def set_address(self, address):
-        self.__address = address
-
-class technician(Users):
-    def __init__(self, username, password, phone_no, email, occupation, company_name):
-        Users.__init__(self, username, password, phone_no, email)
-        self.__occupation = occupation
-        self.__company_name = company_name
-
-    def get_occupation(self):
-        return self.__occupation
-
-    def set_occupation(self, occupation):
-        self.__occupation = occupation
-
-    def get_company_name(self):
-        return self.__company_name
-
-    def set_company_name(self, company_name):
-        self.__company_name = company_name
+# class Customer(Users):
+#     def __init__(self, username, password, phone_no, email, address):
+#         Users.__init__(self, username, password, phone_no, email)
+#         self.__address = address
+#
+#     def get_addresss(self):
+#         return self.__address
+#
+#     def set_address(self, address):
+#         self.__address = address
+#
+# class technician(Users):
+#     def __init__(self, username, password, phone_no, email, occupation, company_name):
+#         Users.__init__(self, username, password, phone_no, email)
+#         self.__occupation = occupation
+#         self.__company_name = company_name
+#
+#     def get_occupation(self):
+#         return self.__occupation
+#
+#     def set_occupation(self, occupation):
+#         self.__occupation = occupation
+#
+#     def get_company_name(self):
+#         return self.__company_name
+#
+#     def set_company_name(self, company_name):
+#         self.__company_name = company_name

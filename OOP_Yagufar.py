@@ -1,8 +1,3 @@
-from flask import Flask, render_template, request
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators
-import firebase_admin
-from firebase_admin import credentials, db
-from Storage import Storage
 from flask import Flask, render_template, request, url_for, redirect
 import firebase_admin
 from Users import Users
@@ -42,6 +37,11 @@ class reviewForm(Form):
 class profileForm(Form):
     pass
 
+class RepairForm(Form):
+    chooseService = SelectField('Select A Service',[validators.DataRequired()],choices=[('','Select Here'),('AIRCON',('Air Conditioning'),('PLUMB','Plumbing'))],default="")
+    chooseLocation = TextAreaField('Select A Location',[validators.DataRequired()])
+    chooseRequest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -80,8 +80,10 @@ def storage_item():
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
 
-@app.route('/Repair/')
+@app.route('/Repair/', methods=['GET','POST'])
 def Repair():
+    if request.method == 'POST' and Form.validate():
+        return render_template('Repair.html')
     return render_template('Repair.html')
 
 @app.route('/Register/', methods=['GET', 'POST'])

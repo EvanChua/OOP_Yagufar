@@ -31,6 +31,17 @@ class Log_InForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
 
+class reviewForm(Form):
+    stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
+    review = TextAreaField('Review', [validators.DataRequired()])
+
+class profileForm(Form):
+    pass
+
+class RepairForm(Form):
+    chooseService = SelectField('Select A Service',[validators.DataRequired()],choices=[('','Select Here'),('AIRCON',('Air Conditioning'),('PLUMB','Plumbing'))],default="")
+    chooseLocation = TextAreaField('Select A Location',[validators.DataRequired()])
+    chooseRequest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
 
 @app.route('/')
 def home():
@@ -70,8 +81,10 @@ def storage_item():
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
 
-@app.route('/Repair/')
+@app.route('/Repair/', methods=['GET','POST'])
 def Repair():
+    if request.method == 'POST' and Form.validate():
+        return render_template('Repair.html')
     return render_template('Repair.html')
 
 @app.route('/Register/', methods=['GET', 'POST'])
@@ -130,9 +143,25 @@ def Log_In():
 
     return render_template('Log_In.html', form=form)
 
-@app.route('/Review/')
+@app.route('/Review/',  methods=['GET', 'POST'])
 def Review():
-    return render_template('Review.html')
+    form = reviewForm(request.form)
+    return render_template('Review.html', form=form)
+
+@app.route('/Profile/',  methods=['GET', 'POST'])
+def Profile():
+    # form = profileForm(request.form)
+    details = root.child("user").get()
+    list = []
+    for values in details:
+        eachvalue = details[values]
+
+        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"])
+        info.set_boboid(values)
+        list.append(info)
+
+
+    return render_template('Profile.html', details = list)
 
 @app.route('/Log_Out/')
 def Log_Out():

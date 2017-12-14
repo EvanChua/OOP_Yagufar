@@ -1,9 +1,16 @@
 class Users:
     def __init__(self, username, password, phone_number, email_address):
+        self.__profileid = ""
         self.__username = username
         self.__password = password
         self.__phone_number = phone_number
         self.__email_address = email_address
+
+    def get_profileid(self):
+        return self.__profileid
+
+    def set_profileid(self, profileid):
+        self.__profileid = profileid
 
     def get_username(self):
         return self.__username

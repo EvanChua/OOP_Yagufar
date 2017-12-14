@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, session, flash, request, url_for, redirect
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
+from Users import Users
 from firebase_admin import credentials, db
 from Storage import Storage
-from Users import Users
+from Repair import Repair
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, \
+    ValidationError, IntegerField
 
 app = Flask(__name__)
 cred = credentials.Certificate('cred/yagufar-bb205-firebase-adminsdk-p7ypj-a0ee653a2d.json')
@@ -14,6 +17,7 @@ default_app = firebase_admin.initialize_app(cred, {
 
 root = db.reference()
 
+
 class StorageForm(Form):
     recipientName = StringField('Recipent Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     lockerId = StringField('Locker ID: ',[validators.DataRequired()])
@@ -21,35 +25,45 @@ class StorageForm(Form):
     phonenumber = IntegerField('Phone Number: ',[validators.DataRequired()])
     emailaddress = StringField('Email Address: ',[validators.DataRequired()])
 
+
 class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.DataRequired()])
     email_address = StringField('Email Address : ',[validators.DataRequired()])
     phone_number = StringField('Phone Number: ',[validators.DataRequired()])
 
+
 class Log_InForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
+
 
 class reviewForm(Form):
     stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
     review = TextAreaField('Review', [validators.DataRequired()])
 
+
 class profileForm(Form):
     pass
 
+
 class RepairForm(Form):
-    chooseService = SelectField('Select A Service',[validators.DataRequired()],choices=[('','Select Here'),('AIRCON',('Air Conditioning'),('PLUMB','Plumbing'))],default="")
-    chooseLocation = TextAreaField('Select A Location',[validators.DataRequired()])
-    chooseRequest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
+    chooseService = SelectField('Select A Service', [validators.DataRequired()],
+                                choices=[('', 'Select Here'), ('AIRCON','Air Conditioning'), ('PLUMB', 'Plumbing')],
+                                default='')
+    chooseLocation = TextAreaField('Select A Location', [validators.DataRequired()])
+    chooseQuest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
+
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
+
 @app.route('/home/')
 def home1():
     return render_template('home.html')
+
 
 @app.route('/storage2/')
 def storage2():
@@ -81,12 +95,6 @@ def storage_item():
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
 
-@app.route('/Repair/', methods=['GET','POST'])
-def Repair():
-    if request.method == 'POST' and Form.validate():
-        return render_template('Repair.html')
-    return render_template('Repair.html')
-
 @app.route('/Register/', methods=['GET', 'POST'])
 def Register():
     form = RegisterForm(request.form)
@@ -110,7 +118,30 @@ def Register():
 
     return render_template('Register.html', form=form)
 
-@app.route('/Log_In/',  methods=['GET', 'POST'])
+
+@app.route('/Repair/', methods=['GET', 'POST'])
+def repair_services():
+    form = RepairForm(request.form)
+    if request.method == 'POST' and form.validate():
+        service = form.chooseService.data
+        location = form.chooseLocation.data
+        quest = form.chooseQuest.data
+        s1 = Repair(service, location, quest)
+
+        # create the magazine object
+        mag_db = root.child('repair')
+        mag_db.push({
+            'service': s1.get_chooseService(),
+            'location': s1.get_chooseLocation(),
+            'request': s1.get_chooseQuest(),
+
+        })
+        return redirect(url_for('confirm.html'))
+
+    return render_template('Repair.html', form=form)
+
+
+@app.route('/Log_In/', methods=['GET', 'POST'])
 def Log_In():
 
     form = Log_InForm(request.form)

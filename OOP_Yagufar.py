@@ -63,7 +63,7 @@ class profileForm(Form):
 class editForm(Form):
     username = StringField('Username : ', [validators.Length(min=1, max=100), validators.DataRequired()])
     password = PasswordField('New Password : ', [validators.DataRequired()])
-    email_address = StringField('New Email Address : ', [validators.DataRequired()])
+    email_address = StringField('New Email Address : ', [validators.DataRequired(),validators.Email()])
     phone_number = StringField('New Phone Number : ', [validators.DataRequired()])
     profile_pic = StringField("Change Profile picture(URL) : ")
     profile_desc = TextAreaField("Edit description : ")

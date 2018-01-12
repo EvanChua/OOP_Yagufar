@@ -1,9 +1,9 @@
 <header id="header_outer">
   <div class="container">
     <div class="header_section">
-      <div class="logo"><a href="javascript:void(0)"><img src="img/logob.png" alt=""></a></div>
+      <div class="logo"><a href="javascript:void(0)"><img src="../../static/img/logob.png" alt=""></a></div>
       <nav class="nav" id="nav">
-        <ul class="">
+        <ul class="" style="">
           <li><a href="/home/">Home</a></li>
           <li><a href="/Storage/">Item Storage</a></li>
           <li><a href="/Repair/">Repair Services</a></li>
@@ -11,10 +11,10 @@
 
           {% if session['logged_in'] %}
                 <li><a href="/Profile/">Profile</a></li>
-                <li><a href="/Log_Out/">log Out</a></li>
+                <li><a style="font-size: 125%" href="/Log_Out/">log Out</a></li>
           {% else %}
                 <li><a href="/Register/">Register</a></li>
-                <li><a href="/Log_In/">log In</a></li>
+                <li><a style="font-size: 125%" href="/Log_In/">log In</a></li>
           {% endif %}
 
 

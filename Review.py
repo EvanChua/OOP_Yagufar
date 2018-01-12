@@ -7,3 +7,4 @@ class Review:
 
     def set_review(self,review):
         self.__review = review
+

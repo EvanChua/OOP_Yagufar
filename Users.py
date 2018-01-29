@@ -1,23 +1,31 @@
 class Users:
-    def __init__(self, username, password, phone_number, email_address, profile_pic, profile_desc):
+    def __init__(self, username,name ,password, phone_number, email_address, address,  profile_pic, profile_desc):
+        # self.__profileid = ""
         self.__profileid = ""
         self.__username = username
+        self.__name = name
         self.__password = password
         self.__phone_number = phone_number
         self.__email_address = email_address
+        self.__address = address
+        # self.__type = type
         self.__profile_pic = profile_pic
         self.__profile_desc = profile_desc
 
-    def get_profileid(self):
-        return self.__profileid
-
-    def set_profileid(self, profileid):
-        self.__profileid = profileid
+    # def get_profileid(self):
+    #     return self.__profileid
+    # def set_profileid(self, profileid):
+    #     self.__profileid = profileid
 
     def get_username(self):
         return self.__username
     def set_username(self, username):
         self.__username = username
+
+    def get_name(self):
+        return self.__name
+    def set_username(self, name):
+        self.__name = name
 
     def get_password(self):
         return self.__password
@@ -34,6 +42,15 @@ class Users:
     def set_email_address(self, email_address):
         self.__email_address = email_address
 
+    def get_address(self):
+        return self.__address
+    def set_address(self, address):
+        self.__address = address
+
+    # def get_type(self):
+    #     return self.__type
+    # def set_type(self, type):
+    #     self.__type = type
     def get_profile_pic(self):
         return self.__profile_pic
 

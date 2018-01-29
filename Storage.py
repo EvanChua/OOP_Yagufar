@@ -52,3 +52,4 @@ class deliveryman(Storage):
         self.__lockerId = lockerId
     def set_dateofdelivery(self, dateofdelivery):
         self.__dateofdelivery = dateofdelivery
+

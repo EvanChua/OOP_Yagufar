@@ -15,9 +15,9 @@
     <form method = 'POST' action="">
 
 
-        <div class="portfolioContainer">
+        <div class="portfolioContainer" >
             <h1 style="text-align: center">
-                Register
+                Register For Technician
             </h1>
             <div class="boxcontainer" style="padding-left: 200px">
 
@@ -39,34 +39,48 @@
             <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-row">
-                    {{ render_field(form.password, class_='form-control') }}
+                    {{ render_field(form.password,class_='form-control') }}
                 </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-row">
-                    {{ render_field(form.email_address, class_='form-control') }}
+                    {{ render_field(form.email_address,class_='form-control') }}
                 </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-row">
-                    {{ render_field(form.phone_number, class_='form-control') }}
+                    {{ render_field(form.phone_number,class_='form-control') }}
                 </div>
 
             </div>
                 <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-row">
-                    {{ render_field(form.address, class_='form-control') }}
+                    {{ render_field(form.address,class_='form-control') }}
                 </div>
                 </div>
-
+            </div>
+            </div>
+                <div class="form-group">
+                <div class="col-md-6">
+                    <div class="form-row">
+                    {{ render_field(form.occupation,class_='form-control') }}
+                </div>
+                </div>
+            </div>
+                <div class="form-group">
+                <div class="col-md-6">
+                    <div class="form-row">
+                    {{ render_field(form.companyname ,class_='form-control') }}
+                </div>
+                </div>
             </div>
 
-                 <div class="form-group col-md-4" >
+                                <div class="form-group col-md-4" >
                 <input type="submit" value="Submit" class="btn btn-info" href="/Log_In/" />
             </div>
 </form>

@@ -1,5 +1,6 @@
-class Users:
-    def __init__(self, username,name ,password, phone_number, email_address, address,  profile_pic, profile_desc, type):
+
+class technician:
+    def __init__(self, username , name, password, phone_number, email_address ,address , occupation, companyname, type):
         self.__profileid = ""
         self.__username = username
         self.__name = name
@@ -7,9 +8,19 @@ class Users:
         self.__phone_number = phone_number
         self.__email_address = email_address
         self.__address = address
-        self.__profile_pic = profile_pic
-        self.__profile_desc = profile_desc
+        self.__occupation = occupation
+        self.__companyname = companyname
         self.__type = type
+
+    def get_occupation(self):
+        return self.__occupation
+    def set_occupation(self, occupation):
+        self.__occupation = occupation
+
+    def get_companyname(self):
+        return self.__companyname
+    def set_companyname(self, companyname):
+        self.__companyname = companyname
 
     def get_profileid(self):
         return self.__profileid
@@ -48,20 +59,5 @@ class Users:
 
     def get_type(self):
         return self.__type
-    def set_type(self, type):
+    def set_Type(self, type):
         self.__type = type
-
-    def get_profile_pic(self):
-        return self.__profile_pic
-
-    def set_profile_pic(self, profile_pic):
-        self.__profile_pic = profile_pic
-
-    def get_profile_desc(self):
-        return self.__profile_desc
-
-    def set_profile_desc(self, profile_desc):
-        self.__profile_desc = profile_desc
-
-
-

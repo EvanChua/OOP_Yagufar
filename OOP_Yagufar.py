@@ -486,6 +486,22 @@ def Log_Out():
     flash('You are now logged out', 'success')
     return redirect(url_for('Log_In'))
 
+@app.route('/Repair2/')
+def viewTechnicians():
+    technicians = root.child('Technician_Register').get()
+    list = []
+
+    for profileid in technicians:
+
+        eachtechnicians = technicians[profileid]
+
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
+        worker.set_profileid(profileid)
+        print(worker.get_profileid())
+        print(worker.get_address())
+        list.append(worker)
+
+    return render_template('Repair2.html', technicians = list)
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'

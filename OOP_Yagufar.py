@@ -11,8 +11,6 @@ from Review import Review
 from Profile import Profile
 import os
 from werkzeug.utils import secure_filename
-# from wtforms.validators import Required, Email, Length, Regexp, EqualTo
-# from flask_wtf import Form
 
 
 UPLOAD_FOLDER = 'static/img'
@@ -113,6 +111,7 @@ class Log_InForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
 
+
 class reviewForm(Form):
     stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
     review = TextAreaField('Review', [validators.DataRequired()])
@@ -139,6 +138,8 @@ class RepairForm(Form):
     chooseDate = StringField('Date (year-month-day)',[validators.DataRequired()])
     chooseTime = StringField('Time (hour:minute)',[validators.DataRequired()])
     chooseQuest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
+
+
 @app.route('/')
 def home():
     return render_template('home.html')

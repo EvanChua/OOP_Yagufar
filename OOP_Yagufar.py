@@ -36,13 +36,13 @@ class StorageForm(Form):
     lockerId = StringField('Locker ID: ',[validators.DataRequired()])
     dateofdelivery = StringField('Date Of Delivery: ',[validators.DataRequired()])
     phonenumber = IntegerField('Phone Number: ',[validators.DataRequired()])
-    emailaddress = StringField('Email Address: ',[validators.DataRequired()])
+    emailaddress = StringField('Email Address: ',[validators.DataRequired(),validators.Email()])
 
 
 class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.DataRequired()])
-    email_address = StringField('Email Address : ',[validators.DataRequired()])
+    email_address = StringField('Email Address : ',[validators.DataRequired(),validators.Email()])
     phone_number = StringField('Phone Number: ',[validators.DataRequired()])
 
 
@@ -61,13 +61,17 @@ class profileForm(Form):
     profile_desc = TextAreaField('Description')
 
 class editForm(Form):
-    username = StringField('Username : ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    password = PasswordField('New Password : ', [validators.DataRequired()])
-    email_address = StringField('New Email Address : ', [validators.DataRequired(),validators.Email()])
-    phone_number = StringField('New Phone Number : ', [validators.DataRequired()])
-    profile_pic = StringField("Change Profile picture(URL) : ")
-    profile_desc = TextAreaField("Edit description : ")
+    username = StringField('Username : ')
+    password = PasswordField('Password : ')
+    email_address = StringField('Email Address : ', [validators.DataRequired(),validators.Email()])
+    phone_number = StringField('Phone Number : ', [validators.DataRequired()])
+    profile_pic = StringField("Profile picture(URL) : ")
+    profile_desc = TextAreaField("Description : ")
 
+class changePassword(Form):
+    oldpassword = PasswordField('Current Password : ', [validators.DataRequired()])
+    newpassword = PasswordField('New Password : ', [validators.DataRequired()])
+    confirmpassword = PasswordField('Confirm New Password : ', [validators.DataRequired()])
 
 class RepairForm(Form):
     chooseService = SelectField('Select A Service', [validators.DataRequired()],
@@ -131,8 +135,8 @@ def Register():
         password = form.password.data
         email_address = form.email_address.data
         phone_number = form.phone_number.data
-        profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
-        profile_desc = "HI PEEPS"
+        profile_pic = "http://i0.kym-cdn.com/entries/icons/mobile/000/025/067/ugandanknuck.jpg"
+        profile_desc = "Do you know da wae"
         s1 = Users(username, password, phone_number, email_address, profile_pic, profile_desc)
 
     # create the magazine object
@@ -201,6 +205,7 @@ def Log_In():
                 if username == v['username'] and password == v['password']:
                     session['logged_in'] = True
                     session['username'] = username
+                    session["password"] = password
                     return redirect(url_for('home'))
                 else:
                     error = 'Invalid login'
@@ -275,8 +280,6 @@ def allowed_file(filename):
 def Edit(id):
     form = editForm(request.form)
     if request.method == "POST" and form.validate():
-        username = form.username.data
-        password = form.password.data
         phone_number = form.phone_number.data
         email_address = form.email_address.data
         profile_pic = form.profile_pic.data
@@ -290,21 +293,26 @@ def Edit(id):
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            flash('No selected file')
+            flash('No selected file', "danger")
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # return redirect(url_for('uploaded_file',
             #                         filename=filename))
-        image = file.filename
+        image = '../static/img/' + file.filename
         print(image)
+        justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
+        for k, v in justey.items():
+            username = v["username"]
+            password = v["password"]
+
         variable = Users(username,password,phone_number,email_address,image,profile_desc)
 
         bobo_db = root.child("user/" + id)
         bobo_db.set({
-            "username":variable.get_username(),
-            "password":variable.get_password(),
+            "username":username,
+            "password":password,
             "phone_number":variable.get_phone_number(),
             "email_address":variable.get_email_address(),
             "profile_pic":image,
@@ -332,7 +340,51 @@ def Edit(id):
 
     return render_template("Edit_Profile.html" , form=form)
 
+@app.route("/Change_Password/<string:id>", methods=['GET', 'POST'])
+def ChangePassword(id):
+    form = changePassword(request.form)
+    if request.method == 'POST' and form.validate():
+        url = "user/" + id
+        eachprofile = root.child(url).get()
 
+        edits = Users(eachprofile["username"], eachprofile["password"], eachprofile["phone_number"],
+                      eachprofile["email_address"], eachprofile["profile_pic"], eachprofile["profile_desc"])
+        phone_number = edits.get_phone_number()
+        email_address = edits.get_email_address()
+        image = edits.get_profile_pic()
+        profile_desc = edits.get_profile_desc()
+
+        oldpassword = form.oldpassword.data
+        newpassword = form.newpassword.data
+        confirmpassword = form.confirmpassword.data
+
+        if oldpassword == session["password"]:
+            if newpassword == confirmpassword:
+                username = session["username"]
+                password = confirmpassword
+                session["password"] = confirmpassword
+
+                bobo_db = root.child("user/" + id)
+                bobo_db.set({
+                    "username": username,
+                    "password": password,
+                    "phone_number": phone_number,
+                    "email_address":email_address,
+                    "profile_pic": image,
+                    "profile_desc":profile_desc,
+
+                })
+
+                flash("Password successfully updated", "success")
+                return redirect(url_for("Profile"))
+            else:
+                error = 'New Password and Confirm Password does not match'
+                flash(error, 'danger')
+        else:
+            error = 'Current Password is incorrect'
+            flash(error, 'danger')
+
+    return render_template('Change_Password.html', form=form)
 
 
 @app.route('/Log_Out/')

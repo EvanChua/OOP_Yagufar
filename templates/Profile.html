@@ -17,7 +17,19 @@
         <tr>
 
             <td>
-                <img class="profilepic" id="picture1" src="../static/img/{{ i.get_profile_pic() }}" width="200" height="200" style="margin:auto;display:block;">
+              {#{%      count = 0
+                      if count == 0: %}#}
+                        {#  <img class="profilepic" id="picture1" src="https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg" width="200" height="200" style="margin:auto;display:block;">#}
+
+                    {#  {% else: %}#}
+
+                          <img class="profilepic" id="picture1" src="{{ i.get_profile_pic() }}" width="200" height="200" style="margin:auto;display:block;">
+
+
+              {#{%  endfor %}#}
+
+
+
 
             </td>
 
@@ -61,7 +73,10 @@
 
     <tr>
         <td>
-            <a href="/Edit_Profile/{{ i.get_profileid() }}" class="btn btn-info">Edit</a>
+            <a href="/Edit_Profile/{{ i.get_profileid() }}" class="btn btn-info">Edit Profile</a>
+
+            <a href="/Change_Password/{{ i.get_profileid() }}" target=>Change Password</a>
+
 
         </td>
     </tr>

@@ -86,7 +86,8 @@ class RegisterForm(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
     email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    address = StringField('Address: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    unit = IntegerField('Unit : ',[validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     # def validate_email_address(form, field):
     #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
@@ -235,11 +236,12 @@ def Register():
             password = form.password.data
             email_address = form.email_address.data
             phone_number = form.phone_number.data
-            address = form.address.data
+            block = form.block.data
+            unit = form.unit.data
             profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
             profile_desc = "HI PEEPS"
             type = form.type
-            s1 = Users(username, name, password, email_address,phone_number , address,  profile_pic, profile_desc, type)
+            s1 = Users(username, name, password, email_address,phone_number , block, unit ,  profile_pic, profile_desc, type)
 
             # create the magazine object
             mag_db = root.child('user')
@@ -249,7 +251,8 @@ def Register():
                 'password': s1.get_password(),
                 'phone_number': s1.get_phone_number(),
                 'email_address': s1.get_email_address(),
-                'address': s1.get_address(),
+                'block': s1.get_block(),
+                'unit': s1.get_unit(),
                 'profile_pic' : s1.get_profile_pic(),
                 'profile_desc' :s1.get_profile_desc(),
                 'type': s1.get_type()

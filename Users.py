@@ -1,12 +1,13 @@
 class Users:
-    def __init__(self, username,name ,password, phone_number, email_address, address,  profile_pic, profile_desc, type):
+    def __init__(self, username,name ,password, phone_number, email_address, block, unit ,  profile_pic, profile_desc, type):
         self.__profileid = ""
         self.__username = username
         self.__name = name
         self.__password = password
         self.__phone_number = phone_number
         self.__email_address = email_address
-        self.__address = address
+        self.__block = block
+        self.__unit = unit
         self.__profile_pic = profile_pic
         self.__profile_desc = profile_desc
         self.__type = type
@@ -41,10 +42,15 @@ class Users:
     def set_email_address(self, email_address):
         self.__email_address = email_address
 
-    def get_address(self):
-        return self.__address
-    def set_address(self, address):
-        self.__address = address
+    def get_block(self):
+        return self.__block
+    def set_block(self, block):
+        self.__block = block
+
+    def get_unit(self):
+        return self.__unit
+    def set_unit(self, unit):
+        self.__unit = unit
 
     def get_type(self):
         return self.__type

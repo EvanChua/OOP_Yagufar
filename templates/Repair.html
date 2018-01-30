@@ -27,14 +27,27 @@
                     {{ render_field(form.chooseLocation, class='form-control') }}
                 </div>
 
-                <div class='tab'>
-                    {{ render_field(form.chooseRequest, class='form-control') }}
+                <div class="'tab">
+                    {{ render_field(form.chooseDate, class='form-control') }}
                 </div>
+
+                <div>
+                    {{ render_field(form.chooseTime,class='form-control') }}
+                </div>
+
+                <div class="tab">
+                    {{ render_field(form.chooseQuest, class='form-control') }}
+                </div>
+
             </div>
+
+
 
             <div class='tab'>
                 <input type="submit" value="Submit" class='btn btn-success'/>
             </div>
+
+
         </center>
     </form>
 

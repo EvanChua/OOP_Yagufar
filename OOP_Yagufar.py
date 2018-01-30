@@ -99,7 +99,7 @@ class RegisterForm_Technician(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
     email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    address = StringField('Company Address: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    postal = StringField('Postal: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     occupation = StringField('Occupation: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     companyname = StringField('Company Name: ',[validators.Length(min=1,max=100),validators.DataRequired()] )
@@ -223,7 +223,7 @@ def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
 
-        email_address = form.username.data
+        email_address = form.email_address.data
 
         ifUserExists = root.child('user').order_by_child('email_address').equal_to(email_address).get()
 
@@ -241,7 +241,7 @@ def Register():
             profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
             profile_desc = "HI PEEPS"
             type = form.type
-            s1 = Users(username, name, password, email_address,phone_number , block, unit ,  profile_pic, profile_desc, type)
+            s1 = Users(username, name, password,phone_number, email_address , block, unit ,  profile_pic, profile_desc, type)
 
             # create the magazine object
             mag_db = root.child('user')
@@ -269,12 +269,12 @@ def Register_Technician():
         name = form.name.data
         password = form.password.data
         email_address = form.email_address.data
-        address = form.address.data
+        postal = form.postal.data
         phone_number = form.phone_number.data
         occupation = form.occupation.data
         companyname = form.companyname.data
         type = form.type
-        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname, type)
+        s1 = technician(username, name, password, phone_number, email_address, postal , occupation, companyname, type)
 
         # create the magazine object
         mag_db = root.child('Technician_Register')
@@ -284,7 +284,7 @@ def Register_Technician():
              'password': s1.get_password(),
              'phone_number': s1.get_phone_number(),
              'email_address': s1.get_email_address(),
-             'address': s1.get_address(),
+             'postal': s1.get_postal(),
              'occupation': s1.get_occupation(),
              'companyname': s1.get_companyname(),
              'type': s1.get_type()

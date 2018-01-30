@@ -24,7 +24,7 @@ class Users:
 
     def get_name(self):
         return self.__name
-    def set_username(self, name):
+    def set_name(self, name):
         self.__name = name
 
     def get_password(self):

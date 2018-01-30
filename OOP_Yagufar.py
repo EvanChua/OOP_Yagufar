@@ -93,7 +93,7 @@ class RegisterForm(Form):
     # def validate_email_address(form, field):
     #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
     #         raise ValidationError('Email Address Taken')
-    type = 'C'
+    type = 'R'
 
 class RegisterForm_Technician(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
@@ -108,9 +108,10 @@ class RegisterForm_Technician(Form):
 
 
 class Log_InForm(Form):
+    type = RadioField("Choose: ", choices=[('T', 'Technician'), ('R', 'Residence')],
+                      default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
-
 
 class reviewForm(Form):
     stars = RadioField('Rating', choices=[('1', ""), ("2", ""), ("3", ""), ("4", ""), ("5", "")])
@@ -225,11 +226,10 @@ def Register():
         email_address = form.email_address.data
         phone_number = form.phone_number.data
         address = form.address.data
-        # type = form.type.data
-        s1 = Users(username, name , password, phone_number, email_address, address)
         profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
         profile_desc = "HI PEEPS"
-        s1 = Users(username, password, phone_number, email_address, profile_pic, profile_desc)
+        type = form.type
+        s1 = Users(username, name, password, email_address,phone_number , address,  profile_pic, profile_desc, type)
 
         # create the magazine object
         mag_db = root.child('residence')
@@ -242,7 +242,7 @@ def Register():
             'address': s1.get_address(),
             'profile_pic' : s1.get_profile_pic(),
             'profile_desc' :s1.get_profile_desc(),
-            # 'type': s1.get_type()
+            'type': s1.get_type()
         })
         return redirect(url_for('Log_In'))
 
@@ -260,7 +260,8 @@ def Register_Technician():
         phone_number = form.phone_number.data
         occupation = form.occupation.data
         companyname = form.companyname.data
-        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname)
+        type = form.type
+        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname, type)
 
         # create the magazine object
         mag_db = root.child('Technician_Register')
@@ -272,8 +273,8 @@ def Register_Technician():
              'email_address': s1.get_email_address(),
              'address': s1.get_address(),
              'occupation': s1.get_occupation(),
-             'companyname': s1.get_companyname()
-             # 'type': s1.get_type()
+             'companyname': s1.get_companyname(),
+             'type': s1.get_type()
         })
         return redirect(url_for('Log_In'))
 
@@ -286,8 +287,9 @@ def Log_In():
     if request.method == 'POST' and form.validate():
         username = form.username.data
         password = form.password.data
+        type = form.type.data
 
-        if type == 'C':
+        if type == 'R':
             ifUserExists = root.child('residence').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
@@ -310,7 +312,8 @@ def Log_In():
                         flash(error, 'danger')
                         return render_template('Log_In.html', form=form)
 
-        elif root.child('Technician_Register').order_by_child('username').equal_to(username).get():
+        elif type == 'T':
+            ifUserExists = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
                 error = 'Invalid login'
@@ -331,6 +334,10 @@ def Log_In():
                         error = 'Invalid login'
                         flash(error, 'danger')
                         return render_template('Log_In.html', form=form)
+        else:
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('Log_In.html', form=form)
 
 
     return render_template('Log_In.html', form=form)

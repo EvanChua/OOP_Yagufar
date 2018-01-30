@@ -19,6 +19,13 @@
             </h1>
 
             <div class="form-group">
+                <div class="form-row">
+                {{ render_field(form.type, class_="radio-inline") }}
+                </div>
+            </div>
+
+
+            <div class="form-group">
                 <div class="col-md-6">
                     {{ render_field(form.username, class_="form-control") }}
 {#                    <p style="font-size:20px"> Username </p>#}

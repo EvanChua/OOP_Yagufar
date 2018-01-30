@@ -13,8 +13,6 @@ from Review import Review
 from Profile import Profile
 import os
 from werkzeug.utils import secure_filename
-# from wtforms.validators import Required, Email, Length, Regexp, EqualTo
-# from flask_wtf import Form
 
 
 UPLOAD_FOLDER = 'static/img'
@@ -90,7 +88,8 @@ class RegisterForm(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
     email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    address = StringField('Address: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    unit = IntegerField('Unit : ',[validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     # def validate_email_address(form, field):
     #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
@@ -110,6 +109,8 @@ class RegisterForm_Technician(Form):
 
 
 class Log_InForm(Form):
+    type = RadioField("Choose: ", choices=[('T', 'Technician'), ('R', 'Residence')],
+                      default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
 
@@ -227,34 +228,42 @@ def repair_services():
 def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-        username = form.username.data
-        name = form.name.data
-        password = form.password.data
-        email_address = form.email_address.data
-        phone_number = form.phone_number.data
-        profile_pic = "http://i0.kym-cdn.com/entries/icons/mobile/000/025/067/ugandanknuck.jpg"
-        profile_desc = "Do you know da wae"
-        address = form.address.data
-        # type = form.type.data
-        s1 = Users(username, name , password, phone_number, email_address, address)
-        profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
-        profile_desc = "HI PEEPS"
-        s1 = Users(username, password, phone_number, email_address, profile_pic, profile_desc)
 
-        # create the magazine object
-        mag_db = root.child('residence')
-        mag_db.push({
-            'username': s1.get_username(),
-            'name': s1.get_name(),
-            'password': s1.get_password(),
-            'phone_number': s1.get_phone_number(),
-            'email_address': s1.get_email_address(),
-            'address': s1.get_address(),
-            'profile_pic' : s1.get_profile_pic(),
-            'profile_desc' :s1.get_profile_desc(),
-            'type': s1.get_type()
-        })
-        return redirect(url_for('Log_In'))
+        email_address = form.username.data
+
+        ifUserExists = root.child('user').order_by_child('email_address').equal_to(email_address).get()
+
+        if len(ifUserExists)> 0:
+            flash('User Exist')
+            return redirect(url_for('Register'))
+        else:
+            username = form.username.data
+            name = form.name.data
+            password = form.password.data
+            email_address = form.email_address.data
+            phone_number = form.phone_number.data
+            block = form.block.data
+            unit = form.unit.data
+            profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
+            profile_desc = "HI PEEPS"
+            type = form.type
+            s1 = Users(username, name, password, email_address,phone_number , block, unit ,  profile_pic, profile_desc, type)
+
+            # create the magazine object
+            mag_db = root.child('user')
+            mag_db.push({
+                'username': s1.get_username(),
+                'name': s1.get_name(),
+                'password': s1.get_password(),
+                'phone_number': s1.get_phone_number(),
+                'email_address': s1.get_email_address(),
+                'block': s1.get_block(),
+                'unit': s1.get_unit(),
+                'profile_pic' : s1.get_profile_pic(),
+                'profile_desc' :s1.get_profile_desc(),
+                'type': s1.get_type()
+            })
+            return redirect(url_for('Log_In'))
 
     return render_template('Register.html', form=form)
 
@@ -270,7 +279,8 @@ def Register_Technician():
         phone_number = form.phone_number.data
         occupation = form.occupation.data
         companyname = form.companyname.data
-        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname)
+        type = form.type
+        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname, type)
 
         # create the magazine object
         mag_db = root.child('Technician_Register')
@@ -282,8 +292,8 @@ def Register_Technician():
              'email_address': s1.get_email_address(),
              'address': s1.get_address(),
              'occupation': s1.get_occupation(),
-             'companyname': s1.get_companyname()
-             # 'type': s1.get_type()
+             'companyname': s1.get_companyname(),
+             'type': s1.get_type()
         })
         return redirect(url_for('Log_In'))
 
@@ -296,9 +306,10 @@ def Log_In():
     if request.method == 'POST' and form.validate():
         username = form.username.data
         password = form.password.data
+        type = form.type.data
 
-        if type == 'C':
-            ifUserExists = root.child('residence').order_by_child('username').equal_to(username).get()
+        if type == 'R':
+            ifUserExists = root.child('user').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
                 error = 'Invalid login'
@@ -320,7 +331,8 @@ def Log_In():
                         flash(error, 'danger')
                         return render_template('Log_In.html', form=form)
 
-        elif root.child('Technician_Register').order_by_child('username').equal_to(username).get():
+        elif type == 'T':
+            ifUserExists = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
                 error = 'Invalid login'
@@ -341,6 +353,10 @@ def Log_In():
                         error = 'Invalid login'
                         flash(error, 'danger')
                         return render_template('Log_In.html', form=form)
+        else:
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('Log_In.html', form=form)
 
 
     return render_template('Log_In.html', form=form)

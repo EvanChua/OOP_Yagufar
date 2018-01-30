@@ -1,5 +1,5 @@
 class Users:
-    def __init__(self, username,name ,password, phone_number, email_address, address,  profile_pic, profile_desc):
+    def __init__(self, username,name ,password, phone_number, email_address, address,  profile_pic, profile_desc, type):
         # self.__profileid = ""
         self.__profileid = ""
         self.__username = username
@@ -8,7 +8,7 @@ class Users:
         self.__phone_number = phone_number
         self.__email_address = email_address
         self.__address = address
-        # self.__type = type
+        self.__type = type
         self.__profile_pic = profile_pic
         self.__profile_desc = profile_desc
 
@@ -47,10 +47,10 @@ class Users:
     def set_address(self, address):
         self.__address = address
 
-    # def get_type(self):
-    #     return self.__type
-    # def set_type(self, type):
-    #     self.__type = type
+    def get_type(self):
+        return self.__type
+    def set_type(self, type):
+        self.__type = type
     def get_profile_pic(self):
         return self.__profile_pic
 

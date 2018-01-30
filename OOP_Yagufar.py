@@ -95,7 +95,7 @@ class RegisterForm(Form):
     # def validate_email_address(form, field):
     #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
     #         raise ValidationError('Email Address Taken')
-    type = 'C'
+    type = 'R'
 
 class RegisterForm_Technician(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
@@ -252,7 +252,7 @@ def Register():
             'address': s1.get_address(),
             'profile_pic' : s1.get_profile_pic(),
             'profile_desc' :s1.get_profile_desc(),
-            # 'type': s1.get_type()
+            'type': s1.get_type()
         })
         return redirect(url_for('Log_In'))
 
@@ -373,7 +373,7 @@ def Profile():
     for values in details:
         eachvalue = details[values]
 
-        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"])
+        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"], eachvalue["address"])
         info.set_profileid(values)
         list.append(info)
     print(list)

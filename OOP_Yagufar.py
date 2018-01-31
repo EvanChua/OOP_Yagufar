@@ -160,10 +160,6 @@ def storage2():
 def storage3():
     return render_template('storage3.html')
 
-@app.route('/storage3/')
-def storage3():
-    return render_template('storage3.html')
-
 
 @app.route('/Storage/',  methods=['GET', 'POST'])
 def storage_item():
@@ -224,7 +220,7 @@ def repair_services():
 
     return render_template('Repair.html', form=form)
 
-@app.route('/Register/', methods=['GET', 'POST'])
+@app.route('/Register2/', methods=['GET', 'POST'])
 def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -267,7 +263,7 @@ def Register():
 
     return render_template('Register2.html', form=form)
 
-@app.route('/Register_Technician/', methods=['GET', 'POST'])
+@app.route('/Register_Technician2/', methods=['GET', 'POST'])
 def Register_Technician():
     form = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
@@ -295,11 +291,11 @@ def Register_Technician():
              'companyname': s1.get_companyname(),
              'type': s1.get_type()
         })
-        return redirect(url_for('Log_In2'))
+        return redirect(url_for('Log_In'))
 
     return render_template('Register_Technician2.html', form=form)
 
-@app.route('/Log_In/',  methods=['GET', 'POST'])
+@app.route('/Log_In2/',  methods=['GET', 'POST'])
 def Log_In():
 
     form = Log_InForm(request.form)
@@ -489,6 +485,7 @@ def Edit(id):
 @app.route('/Log_Out/')
 def Log_Out():
     session.clear()
+    flash('Log Out Success', 'Sucess')
     return redirect(url_for('Log_In'))
 
 @app.route('/Repair2/')

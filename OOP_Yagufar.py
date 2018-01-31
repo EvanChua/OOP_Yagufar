@@ -87,8 +87,8 @@ class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
-    email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    block = StringField('Block Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     unit = IntegerField('Unit : ',[validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     # def validate_email_address(form, field):
@@ -100,11 +100,13 @@ class RegisterForm_Technician(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
+    phone_number = IntegerField('Phone Number: ', [validators.DataRequired()])
     email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    address = StringField('Address : ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    occupation = StringField('Occupation: ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    companyname = StringField('Company Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
     postal = StringField('Postal: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
-    occupation = StringField('Occupation: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    companyname = StringField('Company Name: ',[validators.Length(min=1,max=100),validators.DataRequired()] )
+
     type = 'T'
 
 
@@ -120,9 +122,9 @@ class reviewForm(Form):
     review = TextAreaField('Review', [validators.DataRequired()])
 
 
-class profileForm(Form):
-    profile_pic = FileField()
-    profile_desc = TextAreaField('Description')
+# class profileForm(Form):
+#     profile_pic = FileField()
+#     profile_desc = TextAreaField('Description')
 
 class editForm(Form):
     username = StringField('Username : ')
@@ -131,6 +133,24 @@ class editForm(Form):
     phone_number = StringField('Phone Number : ', [validators.DataRequired()])
     profile_pic = StringField("Profile picture(URL) : ")
     profile_desc = TextAreaField("Description : ")
+    name = StringField("Name : ")
+    block = StringField("Block : ")
+    unit = IntegerField("Unit : ")
+    type = StringField("Type : ")
+
+class editFormTech(Form):
+    username = StringField('Username : ')
+    name = StringField('Name : ')
+    password = PasswordField('Password : ')
+    email_address = StringField('Email Address : ', [validators.DataRequired(),validators.Email()])
+    phone_number = StringField('Phone Number : ', [validators.DataRequired()])
+    profile_pic = StringField("Company picture(URL) : ")
+    profile_desc = TextAreaField("Description : ")
+    postal = StringField("Postal : ")
+    address = StringField("Address : ")
+    occupation = StringField("Occupation : ")
+    companyname = StringField("Company name : ")
+    type = StringField("Type : ")
 
 class changePassword(Form):
     oldpassword = PasswordField('Current Password : ', [validators.DataRequired()])
@@ -244,10 +264,10 @@ def Register():
             phone_number = form.phone_number.data
             block = form.block.data
             unit = form.unit.data
-            profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
-            profile_desc = "HI PEEPS"
+            profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
+            profile_desc = "Do you know da wae?"
             type = form.type
-            s1 = Users(username, name, password,phone_number, email_address , block, unit ,  profile_pic, profile_desc, type)
+            s1 = Users(username, name, password,phone_number, email_address ,  profile_pic, profile_desc,block, unit , type)
 
             # create the magazine object
             mag_db = root.child('user')
@@ -279,21 +299,28 @@ def Register_Technician():
         phone_number = form.phone_number.data
         occupation = form.occupation.data
         companyname = form.companyname.data
+        address = form.address.data
+        profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
+        profile_desc = "Lemme show you da wae"
+
         type = form.type
-        s1 = technician(username, name, password, phone_number, email_address, postal , occupation, companyname, type)
+        s1 = technician(username, name, password, phone_number, email_address, address, occupation, companyname, type , postal, profile_pic, profile_desc)
 
         # create the magazine object
         mag_db = root.child('Technician_Register')
         mag_db.push({
-             'username': s1.get_username(),
-             'name': s1.get_name(),
-             'password': s1.get_password(),
-             'phone_number': s1.get_phone_number(),
-             'email_address': s1.get_email_address(),
-             'postal': s1.get_postal(),
-             'occupation': s1.get_occupation(),
-             'companyname': s1.get_companyname(),
-             'type': s1.get_type()
+            'username': s1.get_username(),
+            'name': s1.get_name(),
+            'password': s1.get_password(),
+            'phone_number': s1.get_phone_number(),
+            'email_address': s1.get_email_address(),
+            'address': s1.get_address(),
+            'occupation': s1.get_occupation(),
+            'companyname': s1.get_companyname(),
+            'postal': s1.get_postal(),
+            'type': s1.get_type(),
+            'profile_pic': s1.get_profile_pic(),
+            'profile_desc': s1.get_profile_desc(),
         })
         return redirect(url_for('Log_In'))
 
@@ -325,6 +352,7 @@ def Log_In():
                     if username == v['username'] and password == v['password']:
                         session['logged_in'] = True
                         session['username'] = username
+                        session["password"] = password
                         return redirect(url_for('home'))
                     else:
                         error = 'Invalid login'
@@ -348,6 +376,7 @@ def Log_In():
                     if username == v['username'] and password == v['password']:
                         session['logged_in_technician'] = True
                         session['username'] = username
+                        session["password"] = password
                         return redirect(url_for('home'))
                     else:
                         error = 'Invalid login'
@@ -388,8 +417,9 @@ def Profile():
     list = []
     for values in details:
         eachvalue = details[values]
+        print(eachvalue)
 
-        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"], eachvalue["address"])
+        info = Users(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"], eachvalue["block"], eachvalue["unit"],  eachvalue["type"])
         info.set_profileid(values)
         list.append(info)
     print(list)
@@ -422,16 +452,42 @@ def Profile():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
+
+@app.route('/Service_Profile/',  methods=['GET', 'POST'])
+def Service_Profile():
+    # form = profileForm(request.form)
+    details = root.child("Technician_Register").get()
+    list = []
+    for values in details:
+        eachvalue = details[values]
+        print(eachvalue)
+
+        info = technician(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"],
+                          eachvalue["email_address"], eachvalue["address"], eachvalue["occupation"],
+                          eachvalue["companyname"], eachvalue["type"],  eachvalue["postal"],  eachvalue["profile_pic"],  eachvalue["profile_desc"])
+        info.set_profileid(values)
+        list.append(info)
+    print(list)
+    return render_template('Service_Profile.html', details=list)
+
+
 @app.route("/Edit_Profile/<string:id>", methods=['GET', 'POST'])
 def Edit(id):
     form = editForm(request.form)
     if request.method == "POST" and form.validate():
         username = form.username.data
+        name = form.name.data
         password = form.password.data
         phone_number = form.phone_number.data
         email_address = form.email_address.data
         profile_pic = form.profile_pic.data
         profile_desc = form.profile_desc.data
+        block = form.block.data
+        unit = form.unit.data
+        type = form.type.data
 
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -450,21 +506,25 @@ def Edit(id):
             #                         filename=filename))
         image = '../static/img/' + file.filename
         print(image)
-        justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
-        for k, v in justey.items():
-            username = v["username"]
-            password = v["password"]
+        # justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
+        # for k, v in justey.items():
+        #     username = v["username"]
+        #     password = v["password"]
 
-        variable = Users(username,password,phone_number,email_address,image,profile_desc)
+        variable = Users(username, name, password,phone_number, email_address ,  profile_pic, profile_desc,block, unit , type)
 
         bobo_db = root.child("user/" + id)
         bobo_db.set({
-            "username":username,
-            "password":password,
+            "username":session["username"],
+            "name":variable.get_name(),
+            "password":session["password"],
             "phone_number":variable.get_phone_number(),
             "email_address":variable.get_email_address(),
             "profile_pic":image,
             "profile_desc":variable.get_profile_desc(),
+            "block":variable.get_block(),
+            "unit":variable.get_unit(),
+            "type":variable.get_type(),
 
             })
 
@@ -476,7 +536,7 @@ def Edit(id):
         url = "user/" +id
         eachprofile = root.child(url).get()
 
-        edits = Users(eachprofile["username"],eachprofile["password"],eachprofile["phone_number"],eachprofile["email_address"],eachprofile["profile_pic"],eachprofile["profile_desc"])
+        edits = Users(eachprofile["username"],eachprofile["name"],eachprofile["password"],eachprofile["phone_number"],eachprofile["email_address"],eachprofile["profile_pic"],eachprofile["profile_desc"],eachprofile["block"],eachprofile["unit"],eachprofile["type"])
 
         edits.set_profileid(id)
         form.username.data = edits.get_username()
@@ -485,52 +545,230 @@ def Edit(id):
         form.email_address.data = edits.get_email_address()
         form.profile_pic.data = edits.get_profile_pic()
         form.profile_desc.data = edits.get_profile_desc()
+        form.name.data = edits.get_name()
+        form.block.data = edits.get_block()
+        form.unit.data = edits.get_unit()
 
     return render_template("Edit_Profile.html" , form=form)
+
+
+
+
+
+
+@app.route("/Edit_Company_Details/<string:id>", methods=['GET', 'POST'])
+def EditTechnician(id):
+    form = editFormTech(request.form)
+    if request.method == "POST" and form.validate():
+        username = form.username.data
+        name = form.name.data
+        password = form.password.data
+        phone_number = form.phone_number.data
+        email_address = form.email_address.data
+        address = form.address.data
+        occupation = form.occupation.data
+        companyname = form.companyname.data
+        postal = form.postal.data
+        profile_pic = form.profile_pic.data
+        profile_desc = form.profile_desc.data
+        type = form.type.data
+
+
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file', "danger")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # return redirect(url_for('uploaded_file',
+            #                         filename=filename))
+        image = '../static/img/' + file.filename
+        print(image)
+        # justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
+        # for k, v in justey.items():
+        #     username = v["username"]
+        #     password = v["password"]
+
+        variable = technician(username, name, password, phone_number, email_address, address, occupation, companyname,
+                              type, postal, profile_pic, profile_desc)
+
+        bobo_db = root.child("Technician_Register/" + id)
+        bobo_db.set({
+            "username":session["username"],
+            "name":variable.get_name(),
+            "password":session["password"],
+            "phone_number":variable.get_phone_number(),
+            "email_address":variable.get_email_address(),
+            "address":variable.get_address(),
+            "occupation": variable.get_occupation(),
+            "companyname": variable.get_companyname(),
+            "type": variable.get_type(),
+            "postal": variable.get_postal(),
+            "profile_pic":image,
+            "profile_desc":variable.get_profile_desc(),
+
+
+            })
+
+        flash("Changes successfully updated","success")
+
+        return redirect(url_for("Service_Profile"))
+
+    else:
+        url = "Technician_Register/" +id
+        eachprofile = root.child(url).get()
+
+        edits = technician(eachprofile["username"],eachprofile["name"],eachprofile["password"],
+                           eachprofile["phone_number"],eachprofile["email_address"],eachprofile["address"],
+                           eachprofile["occupation"],eachprofile["companyname"],eachprofile["type"],
+                           eachprofile["postal"],eachprofile["profile_pic"],eachprofile["profile_desc"])
+
+        edits.set_profileid(id)
+        form.username.data = edits.get_username()
+        form.password.data = edits.get_password()
+        form.phone_number.data = edits.get_phone_number()
+        form.email_address.data = edits.get_email_address()
+        form.profile_pic.data = edits.get_profile_pic()
+        form.profile_desc.data = edits.get_profile_desc()
+        form.name.data = edits.get_name()
+        form.occupation.data = edits.get_occupation()
+        form.companyname.data = edits.get_companyname()
+        form.postal.data = edits.get_postal()
+        form.address.data = edits.get_address()
+
+    return render_template("Edit_Company_Details.html" , form=form)
+
+
+
+
+
+
+
 
 @app.route("/Change_Password/<string:id>", methods=['GET', 'POST'])
 def ChangePassword(id):
     form = changePassword(request.form)
     if request.method == 'POST' and form.validate():
-        url = "user/" + id
-        eachprofile = root.child(url).get()
+        try:
+            if session["logged_in"] == True:
+                url = "user/" + id
+                eachprofile = root.child(url).get()
 
-        edits = Users(eachprofile["username"], eachprofile["password"], eachprofile["phone_number"],
-                      eachprofile["email_address"], eachprofile["profile_pic"], eachprofile["profile_desc"])
-        phone_number = edits.get_phone_number()
-        email_address = edits.get_email_address()
-        image = edits.get_profile_pic()
-        profile_desc = edits.get_profile_desc()
+                edits = Users(eachprofile["username"],eachprofile["name"], eachprofile["password"], eachprofile["phone_number"],
+                              eachprofile["email_address"], eachprofile["profile_pic"], eachprofile["profile_desc"], eachprofile["block"], eachprofile["unit"],eachprofile["type"])
+                phone_number = edits.get_phone_number()
+                email_address = edits.get_email_address()
+                image = edits.get_profile_pic()
+                profile_desc = edits.get_profile_desc()
+                name = edits.get_name()
+                block = edits.get_block()
+                unit = edits.get_unit()
+                type = edits.get_type()
 
-        oldpassword = form.oldpassword.data
-        newpassword = form.newpassword.data
-        confirmpassword = form.confirmpassword.data
+                oldpassword = form.oldpassword.data
+                newpassword = form.newpassword.data
+                confirmpassword = form.confirmpassword.data
 
-        if oldpassword == session["password"]:
-            if newpassword == confirmpassword:
-                username = session["username"]
-                password = confirmpassword
-                session["password"] = confirmpassword
+                if oldpassword == session["password"]:
+                    if newpassword == confirmpassword:
+                        if confirmpassword != oldpassword:
+                            username = session["username"]
+                            password = confirmpassword
+                            session["password"] = confirmpassword
 
-                bobo_db = root.child("user/" + id)
-                bobo_db.set({
-                    "username": username,
-                    "password": password,
-                    "phone_number": phone_number,
-                    "email_address":email_address,
-                    "profile_pic": image,
-                    "profile_desc":profile_desc,
+                            bobo_db = root.child("user/" + id)
+                            bobo_db.set({
+                                "username": username,
+                                "name": name,
+                                "password": password,
+                                "phone_number": phone_number,
+                                "email_address":email_address,
+                                "profile_pic": image,
+                                "profile_desc":profile_desc,
+                                "block":block,
+                                "unit":unit,
+                                "type":type,
 
-                })
 
-                flash("Password successfully updated", "success")
-                return redirect(url_for("Profile"))
-            else:
-                error = 'New Password and Confirm Password does not match'
-                flash(error, 'danger')
-        else:
-            error = 'Current Password is incorrect'
-            flash(error, 'danger')
+                            })
+
+                            flash("Password successfully updated", "success")
+                            return redirect(url_for("Profile"))
+                        else:
+                            flash("Password must differ from old password!", "danger")
+                    else:
+                        error = 'New Password and Confirm Password does not match'
+                        flash(error, 'danger')
+                else:
+                    error = 'Current Password is incorrect'
+                    flash(error, 'danger')
+        except:
+            if session["logged_in_technician"] == True:
+                url = "Technician_Register/" + id
+                eachvalue= root.child(url).get()
+
+                edits = technician(eachvalue["username"], eachvalue["name"], eachvalue["password"],
+                                  eachvalue["phone_number"],
+                                  eachvalue["email_address"], eachvalue["address"], eachvalue["occupation"],
+                                  eachvalue["companyname"], eachvalue["type"], eachvalue["postal"],
+                                  eachvalue["profile_pic"], eachvalue["profile_desc"])
+
+                phone_number = edits.get_phone_number()
+                email_address = edits.get_email_address()
+                image = edits.get_profile_pic()
+                profile_desc = edits.get_profile_desc()
+                name = edits.get_name()
+                address = edits.get_address()
+                companyname = edits.get_companyname()
+                occupation = edits.get_occupation()
+                postal = edits.get_postal()
+                type = edits.get_type()
+
+                oldpassword = form.oldpassword.data
+                newpassword = form.newpassword.data
+                confirmpassword = form.confirmpassword.data
+
+                if oldpassword == session["password"]:
+                    if newpassword == confirmpassword:
+                        if confirmpassword != oldpassword:
+                            username = session["username"]
+                            password = confirmpassword
+                            session["password"] = confirmpassword
+
+                            bobo_db = root.child("Technician_Register/" + id)
+                            bobo_db.set({
+                                "username": username,
+                                "name": name,
+                                "password": password,
+                                "phone_number": phone_number,
+                                "email_address": email_address,
+                                "profile_pic": image,
+                                "profile_desc": profile_desc,
+                                "address":address,
+                                "companyname":companyname,
+                                "occupation":occupation,
+                                "postal":postal,
+                                "type": type,
+
+                            })
+
+                            flash("Password successfully updated", "success")
+                            return redirect(url_for("Service_Profile"))
+                        else:
+                            flash("Password must differ from old password!", "danger")
+                    else:
+                        error = 'New Password and Confirm Password does not match'
+                        flash(error, 'danger')
+                else:
+                    error = 'Current Password is incorrect'
+                    flash(error, 'danger')
 
     return render_template('Change_Password.html', form=form)
 

@@ -8,7 +8,7 @@
 
 
     <center>
-        <h1><p>My Profile</p></h1>
+        <h1><p>Company Details</p></h1>
         <br>
     </center>
     <table class="info" align="center" style="width:35%">
@@ -38,32 +38,42 @@
 
                 <tr>
                     <td>
-                        <h3 id="name">Name: {{ i.get_name() }}</h3>
+                        <h3 >Name: {{ i.get_name() }}</h3>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <!--email-->
-                        <h3 id="email">Email: {{ i.get_email_address() }}</h3>
+                        <h3 >Phone Number: {{ i.get_phone_number() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 >Email: {{ i.get_email_address() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 >Address: {{ i.get_address() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 >Occupation: {{ i.get_occupation() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 >Company: {{ i.get_companyname() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 >Postal Code: {{ i.get_postal() }}</h3>
                     </td>
                 </tr>
 
-                <tr>
-                    <td>
-                        <h3 id="phoneno">Phone Number: {{ i.get_phone_number() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3 id="addr">Block: {{ i.get_block() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3 id="addr">Address: {{ i.get_unit() }}</h3>
-                    </td>
-                </tr>
+
                 <!--new profile picture-->
                 {#        <input type='file' id="newprofilepic" onchange="readURL(this);" style="display: none;"/>#}
                 <tr>
@@ -80,7 +90,7 @@
 
                 <tr>
                     <td>
-                        <a href="/Edit_Profile/{{ i.get_profileid() }}" class="btn btn-info">Edit Profile</a>
+                        <a href="/Edit_Company_Details/{{ i.get_profileid() }}" class="btn btn-info">Edit Details</a>
 
                         <a href="/Change_Password/{{ i.get_profileid() }}" target=>Change Password</a>
 
@@ -93,65 +103,12 @@
 
     </table>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% endblock %}
-h3 {
-margin-top: 20px;
-margin-bottom: 10px;
-}
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 <header id="header_outer">
   <div class="container">
     <div class="header_section">
-      <div class="logo"><a href="javascript:void(0)"><img src="img/logob.png" alt=""></a></div>
+      <div class="logo"><a href="javascript:void(0)"><img src="../static/img/logob.png" alt=""></a></div>
       <nav class="nav" id="nav">
         <ul class="">
           <li><a href="/home/">Home</a></li>
@@ -15,8 +15,7 @@
               <li><a href="/Log_Out/">log Out</a></li>
           {% elif session['logged_in_technician'] %}
               <li><a href="/Repair/">Repair Services</a></li>
-              <li><a href="/Review/">Review</a></li>
-              <li><a href="/Profile/">Profile</a></li>
+              <li><a href="/Service_Profile/">Profile</a></li>
               <li><a href="/Log_Out/">log Out</a></li>
           {% else  %}
               <li><a href="/Storage/">Item Storage</a></li>

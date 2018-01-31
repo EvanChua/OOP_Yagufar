@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>View Technicians</h1>
+    <br/>
+
+    <table class="'table table-bordered">
+        <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Occupation</th>
+            <th>Phone Number</th>
+            <th>Email Address</th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for technician in technicians %}
+            <tr>
+                <td>{{ technician.get_companyname() }}</td>
+                <td>{{ technician.get_occupation() }}</td>
+                <td>{{ technician.get_phone_number() }}</td>
+                <td>{{ technician.get_email_address() }}</td>
+                <td><input type="submit" value="Book" class="btn btn-success"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

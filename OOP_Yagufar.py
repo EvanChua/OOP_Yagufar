@@ -75,10 +75,13 @@ class StorageForm(Form):
     cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
                       default='')
     recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    phonenumber = IntegerField('Phone Number: ', [validators.DataRequired()])
-    emailaddress = StringField('Email Address: ', [validators.DataRequired()])
+    blocknumber = IntegerField('Block Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
+    unitnumber = IntegerField('Unit Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
     lockerId = StringField('Locker ID: ', [RequiredIf(cORd='deliveryman')])
     dateofdelivery = StringField('Date Of Delivery: ', [RequiredIf(cORd='deliveryman')])
+
+# class StorageForm2(Form):
+
 
 
 class RegisterForm(Form):
@@ -157,21 +160,26 @@ def storage2():
 def storage3():
     return render_template('storage3.html')
 
+@app.route('/storage3/')
+def storage3():
+    return render_template('storage3.html')
+
+
 @app.route('/Storage/',  methods=['GET', 'POST'])
 def storage_item():
     form = StorageForm(request.form)
     if request.method == 'POST' and form.validate():
         if form.cORd.data == "customer":
             recipientName = form.recipientName.data
-            phonenumber = form.phonenumber.data
-            emailaddress = form.emailaddress.data
+            blocknumber = form.blocknumber.data
+            unitnumber = form.unitnumber.data
 
-            c = customer(recipientName, phonenumber, emailaddress)
+            c = customer(recipientName, blocknumber, unitnumber)
             customer_db = root.child('customer')
             customer_db.push({
                 'recipientName': c.get_recipientName(),
-                'phonenumber': c.get_phonenumber(),
-                'emailaddress': c.get_emailaddress(),
+                'blocknumber': c.get_blocknumber(),
+                'unitnumber': c.get_unitnumber(),
             })
             return redirect(url_for('storage2'))
 
@@ -483,6 +491,22 @@ def Log_Out():
     session.clear()
     return redirect(url_for('Log_In'))
 
+@app.route('/Repair2/')
+def viewTechnicians():
+    technicians = root.child('Technician_Register').get()
+    list = []
+
+    for profileid in technicians:
+
+        eachtechnicians = technicians[profileid]
+
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
+        worker.set_profileid(profileid)
+        print(worker.get_profileid())
+        print(worker.get_address())
+        list.append(worker)
+
+    return render_template('Repair2.html', technicians = list)
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'

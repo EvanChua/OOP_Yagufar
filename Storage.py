@@ -1,41 +1,42 @@
 class Storage:
-    def __init__(self, recipientName, phonenumber, emailaddress):
+    def __init__(self, recipientName, blocknumber, unitnumber):
         self.__recipientName = recipientName
-        self.__phonenumber = phonenumber
-        self.__emailaddress = emailaddress
+        self.__blocknumber = blocknumber
+        self.__unitnumber = unitnumber
 
     def get_recipientName(self):
         return self.__recipientName
 
-    def get_phonenumber(self):
-        return self.__phonenumber
+    def get_blocknumber(self):
+        return self.__blocknumber
 
-    def get_emailaddress(self):
-        return self.__emailaddress
+    def get_unitnumber(self):
+        return self.__unitnumber
 
     def set_recipientName(self, recipientName):
         self.__recipientName = recipientName
 
-    def set_phonenumber(self, phonenumber):
-        self.__phonenumber = phonenumber
+    def set_blocknumber(self, blocknumber):
+        self.__blocknumber = blocknumber
 
-    def set_emailaddress(self, emailaddress):
-        self.__emailaddress = emailaddress
+    def set_unitnumber(self, unitnumber):
+        self.__unitnumber = unitnumber
+
 
 class customer(Storage):
-    def __init__(self,recipientName,emailaddress,phonenumber):
-        super().__init__(recipientName,emailaddress,phonenumber)
-        self.__phonenumber = phonenumber
-        self.__emailaddress = emailaddress
-    def get_emailaddress(self):
-        return self.__emailaddress
-    def get_phonenumber(self):
-        return self.__phonenumber
+    def __init__(self,recipientName,unitnumber,blocknumber):
+        super().__init__(recipientName,unitnumber,blocknumber)
+        self.__blocknumber = blocknumber
+        self.__unitnumber = unitnumber
+    def get_unitnumber(self):
+        return self.__unitnumber
+    def get_blocknumber(self):
+        return self.__blocknumber
 
     def set_emailaddress(self, emailaddress):
         self.__emailaddress = emailaddress
-    def set_phonenumber(self, phonenumber):
-        self.__phonenumber = phonenumber
+    def set_blocknumber(self, blocknumber):
+        self.__blocknumber = blocknumber
 
 
 class deliveryman(Storage):

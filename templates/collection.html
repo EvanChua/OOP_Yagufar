@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block body %}
+{% from "includes/_formhelper.html" import render_field %}
+
+    <head> Collection Details </head>
+
+    <body>
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <div>
+                <thead>
+                <tr>
+                  <th> Residents' Name</th>
+                  <th> Block Number - Unit Number</th>
+                  <th> Locker ID </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for info in user %}
+                <tr>
+                <td>{{ info.get_name() }}</td>
+                <td>{{ info.get_blocknumber() }} - {{ info.get_unitnumber() }}</td>
+{#                <td>{{ info.get_lockerId()}}</td>#}
+
+                {%  endfor %}
+                </tr>
+              </tbody>
+              </div>
+            </table>
+    </body>
+
+{% endblock %}

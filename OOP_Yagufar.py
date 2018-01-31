@@ -8,7 +8,7 @@ from Users import Users
 from Repair import Repair
 from technician import technician
 from Review import Review
-# from Profile import Profile
+from Profile import Profile
 import os
 from werkzeug.utils import secure_filename
 
@@ -89,7 +89,7 @@ class RegisterForm(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
     email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    block = StringField('Block Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     unit = IntegerField('Unit : ',[validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     # def validate_email_address(form, field):
@@ -102,7 +102,7 @@ class RegisterForm_Technician(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
     email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    address = StringField('Company Address: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    postal = StringField('Postal: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
     occupation = StringField('Occupation: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     companyname = StringField('Company Name: ',[validators.Length(min=1,max=100),validators.DataRequired()] )
@@ -157,6 +157,10 @@ def home1():
 @app.route('/storage2/')
 def storage2():
     return render_template('storage2.html')
+
+@app.route('/storage3/')
+def storage3():
+    return render_template('storage3.html')
 
 @app.route('/storage3/')
 def storage3():
@@ -227,7 +231,7 @@ def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
 
-        email_address = form.username.data
+        email_address = form.email_address.data
 
         ifUserExists = root.child('user').order_by_child('email_address').equal_to(email_address).get()
 
@@ -245,7 +249,7 @@ def Register():
             profile_pic = "https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg"
             profile_desc = "HI PEEPS"
             type = form.type
-            s1 = Users(username, name, password, email_address,phone_number , block, unit ,  profile_pic, profile_desc, type)
+            s1 = Users(username, name, password,phone_number, email_address , block, unit ,  profile_pic, profile_desc, type)
 
             # create the magazine object
             mag_db = root.child('user')
@@ -265,10 +269,6 @@ def Register():
 
     return render_template('Register.html', form=form)
 
-@app.route('/collectionpg/')
-def collectionpg():
-    return render_template("collection.html")
-
 @app.route('/Register_Technician/', methods=['GET', 'POST'])
 def Register_Technician():
     form = RegisterForm_Technician(request.form)
@@ -277,12 +277,12 @@ def Register_Technician():
         name = form.name.data
         password = form.password.data
         email_address = form.email_address.data
-        address = form.address.data
+        postal = form.postal.data
         phone_number = form.phone_number.data
         occupation = form.occupation.data
         companyname = form.companyname.data
         type = form.type
-        s1 = technician(username, name, password, phone_number, email_address,address , occupation, companyname, type)
+        s1 = technician(username, name, password, phone_number, email_address, postal , occupation, companyname, type)
 
         # create the magazine object
         mag_db = root.child('Technician_Register')
@@ -292,7 +292,7 @@ def Register_Technician():
              'password': s1.get_password(),
              'phone_number': s1.get_phone_number(),
              'email_address': s1.get_email_address(),
-             'address': s1.get_address(),
+             'postal': s1.get_postal(),
              'occupation': s1.get_occupation(),
              'companyname': s1.get_companyname(),
              'type': s1.get_type()
@@ -494,7 +494,24 @@ def Log_Out():
     flash('You are now logged out', 'success')
     return redirect(url_for('Log_In'))
 
+@app.route('/Repair2/')
+def viewTechnicians():
+    technicians = root.child('Technician_Register').get()
+    list = []
+
+    for profileid in technicians:
+
+        eachtechnicians = technicians[profileid]
+
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
+        worker.set_profileid(profileid)
+        print(worker.get_profileid())
+        print(worker.get_address())
+        list.append(worker)
+
+    return render_template('Repair2.html', technicians = list)
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'
     app.run(port="80")
+

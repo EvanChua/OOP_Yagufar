@@ -1,16 +1,26 @@
-class Users:
-    def __init__(self, username,name ,password, phone_number, email_address, block, unit ,  profile_pic, profile_desc, type):
+
+class technician:
+    def __init__(self, username , name, password, phone_number, email_address , postal , occupation, companyname, type):
         self.__profileid = ""
         self.__username = username
         self.__name = name
         self.__password = password
         self.__phone_number = phone_number
         self.__email_address = email_address
-        self.__block = block
-        self.__unit = unit
-        self.__profile_pic = profile_pic
-        self.__profile_desc = profile_desc
+        self.__postal = postal
+        self.__occupation = occupation
+        self.__companyname = companyname
         self.__type = type
+
+    def get_occupation(self):
+        return self.__occupation
+    def set_occupation(self, occupation):
+        self.__occupation = occupation
+
+    def get_companyname(self):
+        return self.__companyname
+    def set_companyname(self, companyname):
+        self.__companyname = companyname
 
     def get_profileid(self):
         return self.__profileid
@@ -24,7 +34,7 @@ class Users:
 
     def get_name(self):
         return self.__name
-    def set_name(self, name):
+    def set_username(self, name):
         self.__name = name
 
     def get_password(self):
@@ -42,32 +52,12 @@ class Users:
     def set_email_address(self, email_address):
         self.__email_address = email_address
 
-    def get_block(self):
-        return self.__block
-    def set_block(self, block):
-        self.__block = block
-
-    def get_unit(self):
-        return self.__unit
-    def set_unit(self, unit):
-        self.__unit = unit
+    def get_postal(self):
+        return self.__postal
+    def set_postal(self, postal):
+        self.__postal = postal
 
     def get_type(self):
         return self.__type
-    def set_type(self, type):
+    def set_Type(self, type):
         self.__type = type
-
-    def get_profile_pic(self):
-        return self.__profile_pic
-
-    def set_profile_pic(self, profile_pic):
-        self.__profile_pic = profile_pic
-
-    def get_profile_desc(self):
-        return self.__profile_desc
-
-    def set_profile_desc(self, profile_desc):
-        self.__profile_desc = profile_desc
-
-
-

@@ -11,6 +11,7 @@
 <link href="/static/css/font-awesome.css" rel="stylesheet" type="text/css">
 <link href="/static/css/responsive.css" rel="stylesheet" type="text/css">
 <link href="/static/css/animate.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/animate.css" rel="stylesheet" type="text/css">
 
 <link href='http://fonts.googleapis.com/css?family=Lato:400,900,700,700italic,400italic,300italic,300,100italic,100,900italic' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Dosis:400,500,700,800,600,300,200' rel='stylesheet' type='text/css'>
@@ -59,13 +60,43 @@ function resizeText() {
 	var newFontSizeTitle = Math.floor(fontsizetitle * percentage);
 	$(".divclass").css("font-size", newFontSizeTitle)
 }
+<link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/agency.min.css" rel="stylesheet">
+
+  </head>
+
+<body  id="page-top">
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/vendor/bootstra1p/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Contact form JavaScript -->
+    <script src="/static/js/jqBootstrapValidation.js"></script>
+    <script src="/static/js/contact_me.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="/static/js/agency.min.js"></script>
 </script>
 </head>
 <body>
 
 {% include 'includes/_navbar.html' %}
+{% include 'includes/_message.html' %}
 <div class="container">
+{% include 'includes/_message.html' %}
 {% block body %}{% endblock %}
+
 </div>
 </body>
 </html>

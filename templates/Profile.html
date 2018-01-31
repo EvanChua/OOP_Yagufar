@@ -1,69 +1,135 @@
 {% extends 'layout.html' %}
 {% block body %}
-{% from "includes/_formhelper.html" import render_field %}
-<title>
-    Profile Page
-</title>
-<script>
-     function readURL(input) {
-      if (input.files && input.files[0]) {
-        var reader = new FileReader();
+    {% from "includes/_formhelper.html" import render_field %}
+    <title>
+        Profile Page
+    </title>
 
-        reader.onload = function (e) {
-          $('.profilepic')
-          .attr('src', e.target.result)
-          .width(200)
-          .height(200);
-        };
 
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-</script>
 
-<center><h1><p>My Profile</p></h1></center>
-<table class="info" align="center" style="width:35%">
+    <center>
+        <h1><p>My Profile</p></h1>
+    <br>
+    </center>
+    <table class="info" align="center" style="width:35%">
+     {% for i in details %}
+                        {% if i == details[-1] %}
+        <tr>
+
+            <td>
+                <img class="profilepic" id="picture1" src="../static/img/{{ i.get_profile_pic() }}" width="200" height="200" style="margin:auto;display:block;">
+
+            </td>
+
+            <td>
+                <div class="name">
+                    <!--name-->
+
+                            <tr>
+                                <td>
+                                    <h3 id="name">Name: {{ i.get_username() }}</h3>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <!--email-->
+                                    <h3 id="email">Email: {{ i.get_email_address() }}</h3>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <h3 id="phoneno">Phone Number: {{ i.get_phone_number() }}</h3>
+                                </td>
+                            </tr>
+                </div>
+            </td>
+        </tr>
+        <!--new profile picture-->
+{#        <input type='file' id="newprofilepic" onchange="readURL(this);" style="display: none;"/>#}
     <tr>
-
-      <td>
-        <img class="profilepic" id="picture1" src="" width="200" height="200" style="margin:auto;display:block;" onclick="document.getElementById('newprofilepic').click();">
-      </td>
-
-      <td>
-        <div class="name" >
-          <!--name-->
-            {% for i in details %}
-                {% if i == details[-1]%}
-
-
-          <h3 id="name"><br>{{ i.get_username() }}</h3><a id="nameedit"onclick="synopsis('name')">  Edit</a><br>
-          <!--email-->
-          <h3 id="email">{{ i.get_email_address() }}</h3><a id="mailedit" onclick="synopsis('email')">  Edit</a><br>
-                        {% endif %}
-            {% endfor %}
-        </div>
-      </td>
+        <td>
+          <form>
+            <h3 id="profiledesc" style="padding: 0px">Description: {{ i.get_profile_desc() }}</h3></center></span>
+          </form>
+        </td>
     </tr>
-    <!--new profile picture-->
-    <input type='file' id="newprofilepic" onchange="readURL(this);" style="display: none;"/>
 
-    <script>
-    // function for inputing new profile picture//
-    function readURL(input) {
-      if (input.files && input.files[0]) {
-        var reader = new FileReader();
 
-        reader.onload = function (e) {
-          $('.profilepic')
-          .attr('src', e.target.result)
-          .width(200)
-          .height(200);
-        };
 
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-    </script>
 
-  </table>
+    <tr>
+        <td>
+            <a href="/Edit_Profile/{{ i.get_profileid() }}" class="btn btn-info">Edit</a>
+
+        </td>
+    </tr>
+            {% endif %}
+        {% endfor %}
+
+
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock %}
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}

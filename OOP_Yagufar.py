@@ -85,30 +85,28 @@ class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
-    email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.Email() , validators.DataRequired()])
     block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    unit = IntegerField('Unit : ',[validators.DataRequired()])
-    phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
-    # def validate_email_address(form, field):
-    #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
-    #         raise ValidationError('Email Address Taken')
+    unit = StringField('Unit : ',[validators.DataRequired()])
+    phone_number = StringField('Phone Number: ',[validators.Length(min=8,max=8),validators.DataRequired()])
     type = 'R'
 
 class RegisterForm_Technician(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
-    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    postal = StringField('Postal: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
+    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100), validators.Email() ,validators.DataRequired()])
+    postal = StringField('Postal For Your Company: ',[validators.Length(min=6,max=6),validators.DataRequired()])
+    phone_number = StringField('Phone Number: ',[validators.Length(min=8,max=8),validators.DataRequired()])
     occupation = StringField('Occupation: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     companyname = StringField('Company Name: ',[validators.Length(min=1,max=100),validators.DataRequired()] )
     type = 'T'
 
 
 class Log_InForm(Form):
-    type = RadioField("Choose: ", choices=[('T', 'Technician'), ('R', 'Residence')],
-                      default='')
+    type = SelectField('Role', [validators.DataRequired()],
+                                choices=[('', 'Select Here'), ('R','Residence'), ('T', 'Technician')],
+                                default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
 
@@ -259,7 +257,7 @@ def Register():
             })
             return redirect(url_for('Log_In'))
 
-    return render_template('Register.html', form=form)
+    return render_template('Register2.html', form=form)
 
 @app.route('/Register_Technician/', methods=['GET', 'POST'])
 def Register_Technician():
@@ -289,9 +287,9 @@ def Register_Technician():
              'companyname': s1.get_companyname(),
              'type': s1.get_type()
         })
-        return redirect(url_for('Log_In'))
+        return redirect(url_for('Log_In2'))
 
-    return render_template('Register_Tehnician.html', form=form)
+    return render_template('Register_Technician2.html', form=form)
 
 @app.route('/Log_In/',  methods=['GET', 'POST'])
 def Log_In():
@@ -308,7 +306,7 @@ def Log_In():
 
                 error = 'Invalid login'
                 flash(error, 'danger')
-                return render_template('Log_In.html', form=form)
+                return render_template('Log_In2.html', form=form)
             else:
                 for k, v in ifUserExists.items():
                     print(k, v)
@@ -323,7 +321,7 @@ def Log_In():
                     else:
                         error = 'Invalid login'
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
 
         elif type == 'T':
             ifUserExists = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
@@ -346,14 +344,14 @@ def Log_In():
                     else:
                         error = 'Invalid login'
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
         else:
             error = 'Invalid login'
             flash(error, 'danger')
-            return render_template('Log_In.html', form=form)
+            return render_template('Log_In2.html', form=form)
 
 
-    return render_template('Log_In.html', form=form)
+    return render_template('Log_In2.html', form=form)
 
 
 
@@ -483,7 +481,6 @@ def Edit(id):
 @app.route('/Log_Out/')
 def Log_Out():
     session.clear()
-    flash('You are now logged out', 'success')
     return redirect(url_for('Log_In'))
 
 

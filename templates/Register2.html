@@ -136,6 +136,7 @@ label.light {
   <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up Form</title>
         <link rel="stylesheet" href="css/normalize.css">
         <link href='https://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="css/main.css">
@@ -144,14 +145,20 @@ label.light {
 
       <form method = 'POST' action="">
 
-        <h1>Log In</h1>
-          <label>{{ render_field(form.type) }}</label>
-          <label>{{ render_field(form.username) }}</label>
-          <label>{{ render_field(form.password,class_='form-control') }}</label>
+        <h1>Sign Up</h1>
+
+        <fieldset>
+          <legend><span class="number">1</span>Your basic info</legend>
+          <label>{{ render_field(form.username, id="mail" ) }}</label>
+          <label>{{ render_field(form.name, id="name" ) }}</label>
+          <label>{{ render_field(form.email_address, id="mail" ) }}</label>
+          <label>{{ render_field(form.password , id="password" ) }}</label>
+          <label>{{ render_field(form.phone_number, id="name" ) }}</label>
+          <label>{{ render_field(form.block, id="name" ) }}</label>
+          <label>{{ render_field(form.unit, id="name" ) }}</label>
 
 
-
-        <button type="submit" value="Submit" >Sign Up</button>
+        <button type="submit" value="Submit"  href="/Log_In/" >Sign Up</button>
       </form>
 
     </body>

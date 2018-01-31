@@ -19,63 +19,45 @@
             <h1 style="text-align: center">
                 Register
             </h1>
-            <div class="boxcontainer" style="padding-left: 200px">
+            <div class="container">
 
-            <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+            <div class='tab'>
                     {{ render_field(form.username, class_="form-control") }}
 
                     </div>
-                    </div>
 
-            <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+
+            <div class='tab'>
                     {{ render_field(form.name, class_="form-control") }}
                     </div>
-                    </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+
+
+            <div class='tab'>
                     {{ render_field(form.password, class_='form-control') }}
-                </div>
-                </div>
+
             </div>
-            <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+            <div class='tab'>
                     {{ render_field(form.email_address, class_='form-control') }}
-                </div>
-                </div>
+
             </div>
-            <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+            <div class='tab'>
                     {{ render_field(form.phone_number, class_='form-control') }}
-                </div>
+
 
             </div>
-                <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+                <div class='tab'>
                     {{ render_field(form.block, class_='form-control') }}
-                </div>
-                </div>
+
 
             </div>
-                <div class="form-group">
-                <div class="col-md-6">
-                    <div class="form-row">
+                <div class='tab'>
                     {{ render_field(form.unit, class_='form-control') }}
-                </div>
-                </div>
 
             </div>
 
-                 <div class="form-group col-md-4" >
+                 <div class='tab' style="text-align:center">
                 <input type="submit" value="Submit" class="btn btn-info" href="/Log_In/" />
+            </div>
             </div>
 </form>
 {% endblock %}

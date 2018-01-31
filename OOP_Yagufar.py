@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, session, flash, request, url_for, redirect
+from flask import Flask, render_template, request, session, flash, request, url_for, redirect, current_app
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, IntegerField, ValidationError, TextField, validators, FileField
 # from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
 from firebase_admin import credentials, db
@@ -77,42 +78,43 @@ class StorageForm(Form):
     cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
                       default='')
     recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    phonenumber = IntegerField('Phone Number: ', [validators.DataRequired()])
-    emailaddress = StringField('Email Address: ', [validators.DataRequired()])
+    blocknumber = IntegerField('Block Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
+    unitnumber = IntegerField('Unit Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
     lockerId = StringField('Locker ID: ', [RequiredIf(cORd='deliveryman')])
     dateofdelivery = StringField('Date Of Delivery: ', [RequiredIf(cORd='deliveryman')])
+
+# class StorageForm2(Form):
+
 
 
 class RegisterForm(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
-    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    block = StringField('Block Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    unit = IntegerField('Unit : ',[validators.DataRequired()])
-    phone_number = IntegerField('Phone Number: ',[validators.DataRequired()])
-    # def validate_email_address(form, field):
-    #     if root.child('technician').order_by_child('email_address').equal_to(field.data):
-    #         raise ValidationError('Email Address Taken')
+    password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')])
+    confirm = PasswordField('Repeat Password: ')
+    email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.Email() , validators.DataRequired()])
+    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    unit = StringField('Unit : ',[validators.DataRequired()])
+    phone_number = StringField('Phone Number: ',[validators.Length(min=8,max=8),validators.DataRequired()])
     type = 'R'
 
 class RegisterForm_Technician(Form):
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired()])
-    phone_number = IntegerField('Phone Number: ', [validators.DataRequired()])
-    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.DataRequired()])
-    address = StringField('Address : ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    occupation = StringField('Occupation: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    companyname = StringField('Company Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    postal = StringField('Postal: ',[validators.Length(min=1,max=100),validators.DataRequired()])
-
+    password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match') ])
+    confirm = PasswordField('Repeat Password: ')
+    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100), validators.Email() ,validators.DataRequired()])
+    postal = StringField('Postal For Your Company: ',[validators.Length(min=6,max=6),validators.DataRequired()])
+    phone_number = StringField('Phone Number: ',[validators.Length(min=8,max=8),validators.DataRequired()])
+    occupation = StringField('Occupation: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    companyname = StringField('Company Name: ',[validators.Length(min=1,max=100),validators.DataRequired()] )
     type = 'T'
 
 
 class Log_InForm(Form):
-    type = RadioField("Choose: ", choices=[('T', 'Technician'), ('R', 'Residence')],
-                      default='')
+    type = SelectField('Role', [validators.DataRequired()],
+                                choices=[('', 'Select Here'), ('R','Residence'), ('T', 'Technician')],
+                                default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
 
@@ -185,21 +187,22 @@ def storage2():
 def storage3():
     return render_template('storage3.html')
 
+
 @app.route('/Storage/',  methods=['GET', 'POST'])
 def storage_item():
     form = StorageForm(request.form)
     if request.method == 'POST' and form.validate():
         if form.cORd.data == "customer":
             recipientName = form.recipientName.data
-            phonenumber = form.phonenumber.data
-            emailaddress = form.emailaddress.data
+            blocknumber = form.blocknumber.data
+            unitnumber = form.unitnumber.data
 
-            c = customer(recipientName, phonenumber, emailaddress)
+            c = customer(recipientName, blocknumber, unitnumber)
             customer_db = root.child('customer')
             customer_db.push({
                 'recipientName': c.get_recipientName(),
-                'phonenumber': c.get_phonenumber(),
-                'emailaddress': c.get_emailaddress(),
+                'blocknumber': c.get_blocknumber(),
+                'unitnumber': c.get_unitnumber(),
             })
             return redirect(url_for('storage2'))
 
@@ -244,7 +247,7 @@ def repair_services():
 
     return render_template('Repair.html', form=form)
 
-@app.route('/Register/', methods=['GET', 'POST'])
+@app.route('/Register2/', methods=['GET', 'POST'])
 def Register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -254,7 +257,7 @@ def Register():
         ifUserExists = root.child('user').order_by_child('email_address').equal_to(email_address).get()
 
         if len(ifUserExists)> 0:
-            flash('User Exist')
+            flash('User Exist', 'danger')
             return redirect(url_for('Register'))
         else:
             username = form.username.data
@@ -285,48 +288,49 @@ def Register():
             })
             return redirect(url_for('Log_In'))
 
-    return render_template('Register.html', form=form)
+    return render_template('Register2.html', form=form)
 
-@app.route('/Register_Technician/', methods=['GET', 'POST'])
+@app.route('/Register_Technician2/', methods=['GET', 'POST'])
 def Register_Technician():
     form = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
-        username = form.username.data
-        name = form.name.data
-        password = form.password.data
         email_address = form.email_address.data
-        postal = form.postal.data
-        phone_number = form.phone_number.data
-        occupation = form.occupation.data
-        companyname = form.companyname.data
-        address = form.address.data
-        profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
-        profile_desc = "Lemme show you da wae"
 
-        type = form.type
-        s1 = technician(username, name, password, phone_number, email_address, address, occupation, companyname, type , postal, profile_pic, profile_desc)
+        ifUserExists = root.child('Technician_Register').order_by_child('email_address').equal_to(email_address).get()
 
-        # create the magazine object
-        mag_db = root.child('Technician_Register')
-        mag_db.push({
-            'username': s1.get_username(),
-            'name': s1.get_name(),
-            'password': s1.get_password(),
-            'phone_number': s1.get_phone_number(),
-            'email_address': s1.get_email_address(),
-            'address': s1.get_address(),
-            'occupation': s1.get_occupation(),
-            'companyname': s1.get_companyname(),
-            'postal': s1.get_postal(),
-            'type': s1.get_type(),
-            'profile_pic': s1.get_profile_pic(),
-            'profile_desc': s1.get_profile_desc(),
-        })
-        return redirect(url_for('Log_In'))
+        if len(ifUserExists) > 0:
+            flash('User Exist', 'danger')
+            return redirect(url_for('Register'))
+        else:
+            username = form.username.data
+            name = form.name.data
+            password = form.password.data
+            email_address = form.email_address.data
+            postal = form.postal.data
+            phone_number = form.phone_number.data
+            occupation = form.occupation.data
+            companyname = form.companyname.data
+            type = form.type
+            s1 = technician(username, name, password, phone_number, email_address, postal , occupation, companyname, type)
 
-    return render_template('Register_Tehnician.html', form=form)
+            # create the magazine object
+            mag_db = root.child('Technician_Register')
+            mag_db.push({
+                 'username': s1.get_username(),
+                 'name': s1.get_name(),
+                 'password': s1.get_password(),
+                 'phone_number': s1.get_phone_number(),
+                 'email_address': s1.get_email_address(),
+                 'postal': s1.get_postal(),
+                 'occupation': s1.get_occupation(),
+                 'companyname': s1.get_companyname(),
+                 'type': s1.get_type()
+            })
+            return redirect(url_for('Log_In2'))
 
-@app.route('/Log_In/',  methods=['GET', 'POST'])
+    return render_template('Register_Technician2.html', form=form)
+
+@app.route('/Log_In2/',  methods=['GET', 'POST'])
 def Log_In():
 
     form = Log_InForm(request.form)
@@ -339,9 +343,9 @@ def Log_In():
             ifUserExists = root.child('user').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
-                error = 'Invalid login'
+                error = 'Wrong Username or Password '
                 flash(error, 'danger')
-                return render_template('Log_In.html', form=form)
+                return render_template('Log_In2.html', form=form)
             else:
                 for k, v in ifUserExists.items():
                     print(k, v)
@@ -355,15 +359,15 @@ def Log_In():
                         session["password"] = password
                         return redirect(url_for('home'))
                     else:
-                        error = 'Invalid login'
+                        error = 'Wrong Username or Password '
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
 
         elif type == 'T':
             ifUserExists = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
             if len(ifUserExists) <= 0:
 
-                error = 'Invalid login'
+                error = 'Wrong Username or Password '
                 flash(error, 'danger')
                 return render_template('Log_In.html', form=form)
             else:
@@ -379,16 +383,16 @@ def Log_In():
                         session["password"] = password
                         return redirect(url_for('home'))
                     else:
-                        error = 'Invalid login'
+                        error = 'Wrong Username or Password '
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
         else:
-            error = 'Invalid login'
+            error = 'Wrong Username or Password '
             flash(error, 'danger')
-            return render_template('Log_In.html', form=form)
+            return render_template('Log_In2.html', form=form)
 
 
-    return render_template('Log_In.html', form=form)
+    return render_template('Log_In2.html', form=form)
 
 
 
@@ -776,7 +780,7 @@ def ChangePassword(id):
 @app.route('/Log_Out/')
 def Log_Out():
     session.clear()
-    flash('You are now logged out', 'success')
+    flash('Log Out Successful','success')
     return redirect(url_for('Log_In'))
 
 @app.route('/Repair2/')

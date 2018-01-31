@@ -17,42 +17,29 @@
   <h1 style="text-align: center;padding:auto">
                 Log In
             </h1>
-
-            <div class="form-group">
-                <div class="form-row">
-                {{ render_field(form.type, class_="radio-inline") }}
+<div class="container">
+                <div class='tab'>
+                {{ render_field(form.type,  class='form-control') }}
                 </div>
-            </div>
 
 
-            <div class="form-group">
-                <div class="col-md-6">
+                <div class='tab'>
                     {{ render_field(form.username, class_="form-control") }}
 {#                    <p style="font-size:20px"> Username </p>#}
 {#                    <input class="form-control" id="username" type="text" placeholder="Your Username *" required data-validation-required-message="Please enter your username.">#}
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-6">
+
+                <div class='tab'>
                     {{ render_field(form.password,class_='form-control') }}
 {#                    <p style="font-size:20px ;"> Password </p>#}
 {#                    <input class="form-control" id="password" type="password" placeholder="Your Password *" required data-validation-requierd-message="Please enter your password.">#}
                 </div>
-            </div>
-                            <div class="form-group col-md-4" >
+
+                            <div class='tab' style="text-align:center">
                 <input type="submit" value="Submit" class="btn btn-info" />
             </div>
+
 </form>
 
 {% endblock %}
-{% if form.errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-                {% for error in field_errors %}
-                    <li>{{ form[field_name].label }}: {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
+

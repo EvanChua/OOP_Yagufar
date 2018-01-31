@@ -507,10 +507,9 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
-        print(worker.get_address())
         list.append(worker)
 
     return render_template('Repair2.html', technicians = list)

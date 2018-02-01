@@ -92,8 +92,8 @@ class RegisterForm(Form):
     name = StringField('Name: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ', [validators.Length(min=1,max=100),validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password: ')
-    email_address = TextField('Email Address : ',[validators.Length(min=1,max=100),validators.Email() , validators.DataRequired()])
-    block = StringField('BLock Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
+    email_address = StringField('Email Address : ',[validators.Length(min=1,max=100),validators.Email() , validators.DataRequired()])
+    block = StringField('Block Number: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     unit = StringField('Unit : ',[validators.DataRequired()])
     phone_number = StringField('Phone Number: ',[validators.Length(min=8,max=8),validators.DataRequired()])
     type = 'R'
@@ -149,7 +149,6 @@ class editFormTech(Form):
     profile_pic = StringField("Company picture(URL) : ")
     profile_desc = TextAreaField("Description : ")
     postal = StringField("Postal : ")
-    address = StringField("Address : ")
     occupation = StringField("Occupation : ")
     companyname = StringField("Company name : ")
     type = StringField("Type : ")
@@ -253,14 +252,15 @@ def Register():
     if request.method == 'POST' and form.validate():
 
         email_address = form.email_address.data
+        username = form.username.data
 
         ifUserExists = root.child('user').order_by_child('email_address').equal_to(email_address).get()
+        ifUserExists2 = root.child('user').order_by_child('username').equal_to(username).get()
 
-        if len(ifUserExists)> 0:
+        if len(ifUserExists or ifUserExists2)> 0:
             flash('User Exist', 'danger')
             return redirect(url_for('Register'))
         else:
-            username = form.username.data
             name = form.name.data
             password = form.password.data
             email_address = form.email_address.data
@@ -311,7 +311,10 @@ def Register_Technician():
             occupation = form.occupation.data
             companyname = form.companyname.data
             type = form.type
-            s1 = technician(username, name, password, phone_number, email_address, postal , occupation, companyname, type)
+            profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
+            profile_desc = "Show you know da wae"
+            s1 = technician(username, name, password, phone_number, email_address, occupation, companyname, type,
+                 postal, profile_pic, profile_desc)
 
             # create the magazine object
             mag_db = root.child('Technician_Register')
@@ -324,9 +327,11 @@ def Register_Technician():
                  'postal': s1.get_postal(),
                  'occupation': s1.get_occupation(),
                  'companyname': s1.get_companyname(),
-                 'type': s1.get_type()
+                 'type': s1.get_type(),
+                 "profile_pic":s1.get_profile_pic(),
+                 "profile_desc":s1.get_profile_desc(),
             })
-            return redirect(url_for('Log_In2'))
+            return redirect(url_for('Log_In'))
 
     return render_template('Register_Technician2.html', form=form)
 
@@ -470,7 +475,7 @@ def Service_Profile():
         print(eachvalue)
 
         info = technician(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"],
-                          eachvalue["email_address"], eachvalue["address"], eachvalue["occupation"],
+                          eachvalue["email_address"], eachvalue["occupation"],
                           eachvalue["companyname"], eachvalue["type"],  eachvalue["postal"],  eachvalue["profile_pic"],  eachvalue["profile_desc"])
         info.set_profileid(values)
         list.append(info)
@@ -569,7 +574,6 @@ def EditTechnician(id):
         password = form.password.data
         phone_number = form.phone_number.data
         email_address = form.email_address.data
-        address = form.address.data
         occupation = form.occupation.data
         companyname = form.companyname.data
         postal = form.postal.data
@@ -600,7 +604,7 @@ def EditTechnician(id):
         #     username = v["username"]
         #     password = v["password"]
 
-        variable = technician(username, name, password, phone_number, email_address, address, occupation, companyname,
+        variable = technician(username, name, password, phone_number, email_address, occupation, companyname,
                               type, postal, profile_pic, profile_desc)
 
         bobo_db = root.child("Technician_Register/" + id)
@@ -610,7 +614,6 @@ def EditTechnician(id):
             "password":session["password"],
             "phone_number":variable.get_phone_number(),
             "email_address":variable.get_email_address(),
-            "address":variable.get_address(),
             "occupation": variable.get_occupation(),
             "companyname": variable.get_companyname(),
             "type": variable.get_type(),
@@ -630,7 +633,7 @@ def EditTechnician(id):
         eachprofile = root.child(url).get()
 
         edits = technician(eachprofile["username"],eachprofile["name"],eachprofile["password"],
-                           eachprofile["phone_number"],eachprofile["email_address"],eachprofile["address"],
+                           eachprofile["phone_number"],eachprofile["email_address"],
                            eachprofile["occupation"],eachprofile["companyname"],eachprofile["type"],
                            eachprofile["postal"],eachprofile["profile_pic"],eachprofile["profile_desc"])
 
@@ -645,7 +648,6 @@ def EditTechnician(id):
         form.occupation.data = edits.get_occupation()
         form.companyname.data = edits.get_companyname()
         form.postal.data = edits.get_postal()
-        form.address.data = edits.get_address()
 
     return render_template("Edit_Company_Details.html" , form=form)
 
@@ -720,7 +722,7 @@ def ChangePassword(id):
 
                 edits = technician(eachvalue["username"], eachvalue["name"], eachvalue["password"],
                                   eachvalue["phone_number"],
-                                  eachvalue["email_address"], eachvalue["address"], eachvalue["occupation"],
+                                  eachvalue["email_address"], eachvalue["occupation"],
                                   eachvalue["companyname"], eachvalue["type"], eachvalue["postal"],
                                   eachvalue["profile_pic"], eachvalue["profile_desc"])
 
@@ -729,7 +731,6 @@ def ChangePassword(id):
                 image = edits.get_profile_pic()
                 profile_desc = edits.get_profile_desc()
                 name = edits.get_name()
-                address = edits.get_address()
                 companyname = edits.get_companyname()
                 occupation = edits.get_occupation()
                 postal = edits.get_postal()
@@ -755,7 +756,6 @@ def ChangePassword(id):
                                 "email_address": email_address,
                                 "profile_pic": image,
                                 "profile_desc": profile_desc,
-                                "address":address,
                                 "companyname":companyname,
                                 "occupation":occupation,
                                 "postal":postal,
@@ -795,7 +795,6 @@ def viewTechnicians():
         worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
-        print(worker.get_address())
         list.append(worker)
 
     return render_template('Repair2.html', technicians = list)

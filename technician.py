@@ -1,5 +1,5 @@
 class technician:
-    def __init__(self, username, name, password, phone_number, email_address, address, occupation, companyname, type,
+    def __init__(self, username, name, password, phone_number, email_address, occupation, companyname, type,
                  postal, profile_pic, profile_desc):
         self.__profileid = ""
         self.__username = username
@@ -7,7 +7,6 @@ class technician:
         self.__password = password
         self.__phone_number = phone_number
         self.__email_address = email_address
-        self.__address = address
         self.__occupation = occupation
         self.__companyname = companyname
         self.__type = type
@@ -62,12 +61,6 @@ class technician:
 
     def set_email_address(self, email_address):
         self.__email_address = email_address
-
-    def get_address(self):
-        return self.__address
-
-    def set_address(self, address):
-        self.__address = address
 
     def get_type(self):
         return self.__type

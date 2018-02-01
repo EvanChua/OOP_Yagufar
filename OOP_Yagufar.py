@@ -49,31 +49,6 @@ class RequiredIf(object):
                     validators.Optional().__call__(form, field)
 
 
-# class UniqueUser(object):
-#     def __init__(self, message="User exists"):
-#         self.message = message
-#
-#     def __call__(self, form, field):
-#         if current_app.security.datastore.find_user(email=field.data):
-#             raise ValidationError(self.message)
-#
-# validators = {
-#     'email': [
-#         Required(),
-#         Email(),
-#         UniqueUser(message='Email address is associated with '
-#                            'an existing account')
-#     ],
-#     'password': [
-#         Required(),
-#         Length(min=6, max=50),
-#         EqualTo('confirm', message='Passwords must match'),
-#         Regexp(r'[A-Za-z0-9@#$%^&+=]',
-#                message='Password contains invalid characters')
-#     ]
-# }
-
-
 class StorageForm(Form):
     cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
                       default='')
@@ -374,7 +349,7 @@ def Log_In():
 
                 error = 'Wrong Username or Password '
                 flash(error, 'danger')
-                return render_template('Log_In.html', form=form)
+                return render_template('Log_In2.html', form=form)
             else:
                 for k, v in ifUserExists.items():
                     print(k, v)
@@ -792,7 +767,7 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['address'], eachtechnicians['occupation'], eachtechnicians['companyname'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)

@@ -1,6 +1,6 @@
 class technician:
     def __init__(self, username, name, password, phone_number, email_address, occupation, companyname, type,
-                 postal, profile_pic, profile_desc):
+                 postal, profile_pic, profile_desc , specialization):
         self.__profileid = ""
         self.__username = username
         self.__name = name
@@ -13,6 +13,7 @@ class technician:
         self.__postal = postal
         self.__profile_pic = profile_pic
         self.__profile_desc = profile_desc
+        self.__specialization = specialization
 
     def get_occupation(self):
         return self.__occupation
@@ -89,3 +90,9 @@ class technician:
 
     def set_profile_desc(self, profile_desc):
         self.__profile_desc = profile_desc
+
+    def get_specialization(self):
+        return self.__specialization
+
+    def set_specialization(self, specialization):
+        self.__specialization = specialization

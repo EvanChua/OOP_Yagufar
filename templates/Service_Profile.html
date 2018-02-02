@@ -13,9 +13,9 @@
     </center>
     <table class="info" align="center" style="width:35%">
         {% for i in details %}
-            {% if i == details[-1] %}
-                <tr>
 
+
+                <tr>
                     <td>
                         {#{%      count = 0
                       if count == 0: %}#}
@@ -25,47 +25,43 @@
 
                         <img class="profilepic" id="picture1" src="{{ i.get_profile_pic() }}" width="200" height="200"
                              style="margin:auto;display:block;">
-
-
                         {#{%  endfor %}#}
-
-
                     </td>
-
-                    <td>
-                        <div class="name">
-                            <!--name-->
-
                 <tr>
                     <td>
-                        <h3 >Name: {{ i.get_name() }}</h3>
+                        <h3>Name: {{ i.get_name() }}</h3>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <h3 >Phone Number: {{ i.get_phone_number() }}</h3>
+                        <h3>Phone Number: {{ i.get_phone_number() }}</h3>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <h3 >Email: {{ i.get_email_address() }}</h3>
+                        <h3>Email: {{ i.get_email_address() }}</h3>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <h3 >Occupation: {{ i.get_occupation() }}</h3>
+                        <h3>Occupation: {{ i.get_occupation() }}</h3>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <h3 >Company: {{ i.get_companyname() }}</h3>
+                        <h3>Specialization: {{ i.get_specialization() }}</h3>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <h3 >Postal Code: {{ i.get_postal() }}</h3>
+                        <h3>Company: {{ i.get_companyname() }}</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Postal Code: {{ i.get_postal() }}</h3>
                     </td>
                 </tr>
 
@@ -82,21 +78,15 @@
                 </tr>
 
 
-
-
                 <tr>
                     <td>
                         <a href="/Edit_Company_Details/{{ i.get_profileid() }}" class="btn btn-info">Edit Details</a>
 
                         <a href="/Change_Password/{{ i.get_profileid() }}" target=>Change Password</a>
-
-
                     </td>
                 </tr>
-            {% endif %}
+
         {% endfor %}
-
-
     </table>
 
 {% endblock %}

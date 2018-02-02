@@ -6,7 +6,7 @@ from firebase_admin import credentials, db
 from Storage import Storage
 from Repair import Repair
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, FileField,TextField, \
-    ValidationError, IntegerField
+    ValidationError, IntegerField, SelectMultipleField , widgets
 from Users import Users
 from Repair import Repair
 from technician import technician
@@ -115,6 +115,11 @@ class editForm(Form):
     unit = IntegerField("Unit : ")
     type = StringField("Type : ")
 
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 class editFormTech(Form):
     username = StringField('Username : ')
     name = StringField('Name : ')
@@ -125,8 +130,11 @@ class editFormTech(Form):
     profile_desc = TextAreaField("Description : ")
     postal = StringField("Postal : ")
     occupation = StringField("Occupation : ")
+    specialization = SelectMultipleField("Specialization : ", choices=[("Air-con", "Air-con"),("Plumbing", "Plumbing"),("Electronics", "Electronics")], option_widget = widgets.CheckboxInput(), widget = widgets.ListWidget(prefix_label=False))
     companyname = StringField("Company name : ")
     type = StringField("Type : ")
+
+
 
 class changePassword(Form):
     oldpassword = PasswordField('Current Password : ', [validators.DataRequired()])
@@ -286,10 +294,11 @@ def Register_Technician():
             occupation = form.occupation.data
             companyname = form.companyname.data
             type = form.type
+            specialization = ""
             profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
             profile_desc = "Show you know da wae"
             s1 = technician(username, name, password, phone_number, email_address, occupation, companyname, type,
-                 postal, profile_pic, profile_desc)
+                 postal, profile_pic, profile_desc , specialization)
 
             # create the magazine object
             mag_db = root.child('Technician_Register')
@@ -305,6 +314,7 @@ def Register_Technician():
                  'type': s1.get_type(),
                  "profile_pic":s1.get_profile_pic(),
                  "profile_desc":s1.get_profile_desc(),
+                 "specialization":s1.get_specialization()
             })
             return redirect(url_for('Log_In'))
 
@@ -397,7 +407,9 @@ def render_review():
 @app.route('/Profile/',  methods=['GET', 'POST'])
 def Profile():
     # form = profileForm(request.form)
-    details = root.child("user").get()
+    details =  root.child('user').order_by_child('username').equal_to(session['username']).get()
+
+
     list = []
     for values in details:
         eachvalue = details[values]
@@ -443,7 +455,8 @@ def allowed_file(filename):
 @app.route('/Service_Profile/',  methods=['GET', 'POST'])
 def Service_Profile():
     # form = profileForm(request.form)
-    details = root.child("Technician_Register").get()
+    details = root.child("Technician_Register").order_by_child('username').equal_to(session['username']).get()
+
     list = []
     for values in details:
         eachvalue = details[values]
@@ -451,7 +464,7 @@ def Service_Profile():
 
         info = technician(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"],
                           eachvalue["email_address"], eachvalue["occupation"],
-                          eachvalue["companyname"], eachvalue["type"],  eachvalue["postal"],  eachvalue["profile_pic"],  eachvalue["profile_desc"])
+                          eachvalue["companyname"], eachvalue["type"],  eachvalue["postal"],  eachvalue["profile_pic"],  eachvalue["profile_desc"] , ", ".join(eachvalue["specialization"]))
         info.set_profileid(values)
         list.append(info)
     print(list)
@@ -472,6 +485,12 @@ def Edit(id):
         block = form.block.data
         unit = form.unit.data
         type = form.type.data
+        url = "user/" + id
+        eachprofile = root.child(url).get()
+
+        edits = Users(eachprofile["username"], eachprofile["name"], eachprofile["password"],
+                      eachprofile["phone_number"], eachprofile["email_address"], eachprofile["profile_pic"],
+                      eachprofile["profile_desc"], eachprofile["block"], eachprofile["unit"], eachprofile["type"])
 
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -481,14 +500,14 @@ def Edit(id):
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            flash('No selected file', "danger")
-            return redirect(request.url)
+            image = edits.get_profile_pic()
+            # return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            image = '../static/img/' + file.filename
             # return redirect(url_for('uploaded_file',
             #                         filename=filename))
-        image = '../static/img/' + file.filename
         print(image)
         # justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
         # for k, v in justey.items():
@@ -555,7 +574,15 @@ def EditTechnician(id):
         profile_pic = form.profile_pic.data
         profile_desc = form.profile_desc.data
         type = form.type.data
+        specialization = form.specialization.data
+        url = "Technician_Register/" + id
+        eachprofile = root.child(url).get()
 
+        edits = technician(eachprofile["username"], eachprofile["name"], eachprofile["password"],
+                           eachprofile["phone_number"], eachprofile["email_address"],
+                           eachprofile["occupation"], eachprofile["companyname"], eachprofile["type"],
+                           eachprofile["postal"], eachprofile["profile_pic"], eachprofile["profile_desc"],
+                           eachprofile["specialization"])
 
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -565,14 +592,14 @@ def EditTechnician(id):
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            flash('No selected file', "danger")
-            return redirect(request.url)
+            image = edits.get_profile_pic()
+            # return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # return redirect(url_for('uploaded_file',
             #                         filename=filename))
-        image = '../static/img/' + file.filename
+            image = '../static/img/' + file.filename
         print(image)
         # justey = root.child('user').order_by_child('username').equal_to(session["username"]).get()
         # for k, v in justey.items():
@@ -580,7 +607,7 @@ def EditTechnician(id):
         #     password = v["password"]
 
         variable = technician(username, name, password, phone_number, email_address, occupation, companyname,
-                              type, postal, profile_pic, profile_desc)
+                              type, postal, profile_pic, profile_desc, specialization)
 
         bobo_db = root.child("Technician_Register/" + id)
         bobo_db.set({
@@ -595,6 +622,7 @@ def EditTechnician(id):
             "postal": variable.get_postal(),
             "profile_pic":image,
             "profile_desc":variable.get_profile_desc(),
+            "specialization":variable.get_specialization()
 
 
             })
@@ -610,7 +638,7 @@ def EditTechnician(id):
         edits = technician(eachprofile["username"],eachprofile["name"],eachprofile["password"],
                            eachprofile["phone_number"],eachprofile["email_address"],
                            eachprofile["occupation"],eachprofile["companyname"],eachprofile["type"],
-                           eachprofile["postal"],eachprofile["profile_pic"],eachprofile["profile_desc"])
+                           eachprofile["postal"],eachprofile["profile_pic"],eachprofile["profile_desc"],eachprofile["specialization"])
 
         edits.set_profileid(id)
         form.username.data = edits.get_username()
@@ -623,6 +651,7 @@ def EditTechnician(id):
         form.occupation.data = edits.get_occupation()
         form.companyname.data = edits.get_companyname()
         form.postal.data = edits.get_postal()
+        form.specialization.data = edits.get_specialization()
 
     return render_template("Edit_Company_Details.html" , form=form)
 

@@ -1,5 +1,5 @@
 class Users:
-    def __init__(self, username,name ,password, phone_number, email_address, block, unit ,  profile_pic, profile_desc, type):
+    def __init__(self, username,name ,password, phone_number, email_address, profile_pic, profile_desc, block, unit , type):
         self.__profileid = ""
         self.__username = username
         self.__name = name

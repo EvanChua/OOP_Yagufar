@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+    {% from "includes/_formhelper.html" import render_field %}
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <h1>View Technicians</h1>
     <br/>
 
@@ -22,10 +24,14 @@
                 <td>{{ technician.get_occupation() }}</td>
                 <td>{{ technician.get_phone_number() }}</td>
                 <td>{{ technician.get_email_address() }}</td>
-                <td><input type="submit" value="Book" class="btn btn-success"></td>
+                <td>
+                    <form action="/Repair">
+                        <input type='submit' class="btn btn-success" value='Booking'>
+                    </form>
+                </td>
             </tr>
-        {% endfor %}
         </tbody>
+        {% endfor %}
     </table>
 
 {% endblock %}

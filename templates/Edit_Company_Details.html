@@ -14,29 +14,12 @@
     {% endif %}
     <form method="POST" actions="" enctype=multipart/form-data>
         <h1 style="text-align: center;padding:auto">
-            Profile - Edit
+            Edit - Company
         </h1>
-        {# <div class="form-group">
-                <div class="col-md-6">
-                    {{ render_field(form.username, class_="form-control") }}
 
-                </div>
-            </div>#}
-        {# <div class="form-group">
-                <div class="col-md-6">
-                    {{ render_field(form.password,class_='form-control') }}
-
-                </div>
-            </div>#}
         <div class="form-group">
             <div class="col-md-6">
                 {{ render_field(form.name,class_='form-control') }}
-
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-6">
-                {{ render_field(form.email_address,class_='form-control') }}
 
             </div>
         </div>
@@ -48,19 +31,39 @@
         </div>
         <div class="form-group">
             <div class="col-md-6">
-                {{ render_field(form.block,class_='form-control') }}
+                {{ render_field(form.email_address,class_='form-control') }}
+
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-6">
+                {{ render_field(form.occupation,class_='form-control') }}
 
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-6">
-                {{ render_field(form.unit,class_='form-control') }}
+                {{ render_field(form.specialization) }}
 
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-6">
-                <b>Profile Picture (Optional):</b>
+                {{ render_field(form.companyname,class_='form-control') }}
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+                {{ render_field(form.postal,class_='form-control') }}
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+                <b>Company Picture (Optional):</b>
                 <input type=file name=file>
 
             </div>

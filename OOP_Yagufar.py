@@ -3,12 +3,13 @@ from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, P
 # from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
 from firebase_admin import credentials, db
-from Storage import Storage,deliveryman,customer
+from Storage import Storage,deliveryman, customer
 from Users import Users
 from Repair import Repair
 from technician import technician
 from Review import Review
 from Profile import Profile
+import random
 import os
 from werkzeug.utils import secure_filename
 
@@ -72,15 +73,17 @@ class RequiredIf(object):
 
 
 class StorageForm(Form):
-    cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
-                      default='')
+    # cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
+    #                   default='customer')
     recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    blocknumber = IntegerField('Block Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
-    unitnumber = IntegerField('Unit Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
-    lockerId = StringField('Locker ID: ', [RequiredIf(cORd='deliveryman')])
-    dateofdelivery = StringField('Date Of Delivery: ', [RequiredIf(cORd='deliveryman')])
+    blocknumber = IntegerField('Block Number: ', [validators.optional()])
+    unitnumber = IntegerField('Unit Number: ', [validators.optional()])
 
-# class StorageForm2(Form):
+
+class StorageForm2(Form):
+    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    blocknumber = StringField('Block Number: ', [validators.optional()])
+    unitnumber = IntegerField('Unit Number: ', [validators.optional()])
 
 
 
@@ -162,16 +165,48 @@ def storage2():
 def storage3():
     return render_template('storage3.html')
 
-@app.route('/storage3/')
-def storage3():
-    return render_template('storage3.html')
+@app.route('/storagefordelivery/', methods = ['GET','POST'])
+def storagefordelivery():
+    form2 = StorageForm2(request.form)
+    if request.method == 'POST' and form2.validate():
 
+        recipientName = form2.recipientName.data
+        block = form2.blocknumber.data
+        unit = form2.unitnumber.data
+
+        ifUserExists = root.child('user').order_by_child('block').equal_to(block).get()
+        ifUserExists2 = root.child('user').order_by_child('unit').equal_to(unit).get()
+
+        if len(ifUserExists)<1:
+            flash('User doesnt Exist', ' error')
+            return redirect(url_for('storagefordelivery'))
+
+        elif len(ifUserExists2)<1:
+            flash('User doesnt Exist', ' error')
+            return redirect(url_for('storagefordelivery'))
+
+        else:
+            id = random.randint(1, 1000)
+            flash(id , 'success')
+            d = deliveryman(recipientName, block, unit, id)
+            deliveryman_db = root.child('deliveryman')
+            deliveryman_db.push({
+
+                'recipientName': d.get_recipientName(),
+                'blocknumber': d.get_blocknumber(),
+                'unitnumber': d.get_unitnumber(),
+                'id': d.get_id(),
+            })
+
+
+
+
+    return render_template('storagefordelivery.html',form=form2)
 
 @app.route('/Storage/',  methods=['GET', 'POST'])
 def storage_item():
     form = StorageForm(request.form)
     if request.method == 'POST' and form.validate():
-        if form.cORd.data == "customer":
             recipientName = form.recipientName.data
             blocknumber = form.blocknumber.data
             unitnumber = form.unitnumber.data
@@ -185,21 +220,14 @@ def storage_item():
             })
             return redirect(url_for('storage2'))
 
-        elif form.cORd.data == "deliveryman":
-            recipientName = form.recipientName.data
-            lockerId = form.lockerId.data
-            dateofdelivery = form.dateofdelivery.data
-
-            d = deliveryman(recipientName, lockerId, dateofdelivery)
-            deliveryman_db = root.child('deliveryman')
-            deliveryman_db.push({
-                'recipientName': d.get_recipientName(),
-                'lockerId': d.get_lockerId(),
-                'dateofdelivery': d.get_dateofdelivery(),
-            })
-            return redirect(url_for('storage3'))
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
+
+# @app.route('/delete_collection/<string:id>')
+# def delete_collection():
+#     mag_db = root.child('customer'+ id)
+#     mag_db.delete()
+
 
 @app.route('/Repair/', methods=['GET', 'POST'])
 def repair_services():
@@ -226,9 +254,11 @@ def repair_services():
 
     return render_template('Repair.html', form=form)
 
-@app.route('/Register/', methods=['GET', 'POST'])
+@app.route('/Register2/', methods=['GET', 'POST'])
 def Register():
     form = RegisterForm(request.form)
+
+    list = []
     if request.method == 'POST' and form.validate():
 
         email_address = form.email_address.data
@@ -252,6 +282,13 @@ def Register():
             s1 = Users(username, name, password,phone_number, email_address , block, unit ,  profile_pic, profile_desc, type)
 
             # create the magazine object
+            # mag_db = root.child('user').get()
+            # for info in mag_db:
+            #     eachinfo = mag_db[info]
+            #     data = Users(eachinfo['name'],eachinfo['block'],eachinfo['unit'])
+            #     data.set_info(info)
+            #     print(data.get_info())
+            #     list.append(data)
             mag_db = root.child('user')
             mag_db.push({
                 'username': s1.get_username(),
@@ -265,9 +302,61 @@ def Register():
                 'profile_desc' :s1.get_profile_desc(),
                 'type': s1.get_type()
             })
+
             return redirect(url_for('Log_In'))
 
-    return render_template('Register.html', form=form)
+    return render_template('Register.html', form=form, list=list)
+
+@app.route('/collectionpg/')
+def collectionpg():
+    mag_db = root.child('customer').get()
+
+    list = []
+    for info in mag_db:
+        eachinfo = mag_db[info]
+        data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
+        data.set_info(info)
+        print(data.get_info())
+        list.append(data)
+    print(list)
+    # return render_template('collection.html', mag_db= list)
+
+    deliveryman_db = root.child('deliveryman').get()
+    list2 = []
+    for info2 in deliveryman_db:
+        eachinfo2 = deliveryman_db[info2]
+        data2 = deliveryman(eachinfo2['recipientName'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
+        data2.set_info2(info2)
+        print(data2.get_info2())
+        list2.append(data2)
+
+    print(list2)
+    return render_template('collection.html', mag_db=list,deliveryman_db=list2)
+    # return render_template('collection.html', mag_db=list2)
+
+
+    # block = request.args.get('block', 111)  # use default value repalce 'None'
+    # unit = request.args.get('unit', 111)
+    # #
+    # # print(block)
+    # # print(unit)
+    #
+    # #collectionpg?block=111&unit=111
+    # storageitems = root.child('customer').order_by_child('blocknumber').equal_to(block).get()
+    # list = []
+    # for k, v in storageitems.items():
+    #     print(k, v)
+    #     # print(sha256_crypt.encrypt(password))
+    #     print(v['blocknumber'])
+    #     print(v['unitnumber'])
+    #
+    #     if v['unitnumber'] == unit:
+    #          c = customer(v['recipientName'], v['blocknumber'], v['unitnumber'])
+    #          list.append(c)
+    #
+    #     print(len(list))
+    #         #create the storage object then add into a list, and then pass it to the render_template
+
 
 @app.route('/Register_Technician/', methods=['GET', 'POST'])
 def Register_Technician():
@@ -301,7 +390,7 @@ def Register_Technician():
 
     return render_template('Register_Tehnician.html', form=form)
 
-@app.route('/Log_In/',  methods=['GET', 'POST'])
+@app.route('/Log_In2/',  methods=['GET', 'POST'])
 def Log_In():
 
     form = Log_InForm(request.form)
@@ -331,7 +420,7 @@ def Log_In():
                     else:
                         error = 'Invalid login'
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
 
         elif type == 'T':
             ifUserExists = root.child('Technician_Register').order_by_child('username').equal_to(username).get()

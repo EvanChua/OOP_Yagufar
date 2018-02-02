@@ -1,8 +1,43 @@
 {% extends 'layout.html' %}
 {% block body %}
 {% from "includes/_formhelper.html" import render_field %}
+{#<script>#}
+{#$(document).ready(function () {#}
+{#    $('#checkbox').change(function () {#}
+{#        if (!this.checked)#}
+{#            $('#stuff').fadeIn('fast');#}
+{#        else#}
+{#            $('#stuff').fadeOut('fast');#}
+{#    });#}
+{# });#}
 
-    <head> Collection Details </head>
+{#$(document).ready(function () {#}
+{#            $('#stuff').show();#}
+{##}
+{##}
+{#            $('input[type="radio"]').click(function () {#}
+{##}
+{#                if ($(this.checked)) {#}
+{#                    $('#stuff').hide();#}
+{#                }#}
+{#                else {#}
+{#                    $('#stuff').show();#}
+{#                }#}
+{#            });})#}
+{#</script>#}
+
+{#$('checkbox').change(function () {#}
+{##}
+{#                if ($(this).attr('checked')) {#}
+{#                    $('#stuff').hide();#}
+{#                }#}
+{#                else {#}
+{#                    $('#stuff').show();#}
+{#                }#}
+{#            });#}
+
+
+    <head><h2> Collection Details </h2></head>
 
     <body>
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -13,16 +48,25 @@
                   <th> Block Number - Unit Number</th>
                   <th> Locker ID </th>
                 </tr>
-              </thead>
+                </thead>
               <tbody>
-                {% for info in user %}
-                <tr>
-                <td>{{ info.get_name() }}</td>
-                <td>{{ info.get_blocknumber() }} - {{ info.get_unitnumber() }}</td>
-{#                <td>{{ info.get_lockerId()}}</td>#}
 
-                {%  endfor %}
-                </tr>
+                {% for info in mag_db %}
+                        <tr id="stuff">
+                <td>{{ info.get_recipientName() }}</td>
+                <td>{{ info.get_blocknumber() }} - {{ info.get_unitnumber() }}</td>
+{#                        </tr>#}
+                {% endfor %}
+                    {% for info2 in deliveryman_db %}
+                        <td> {{ info2.get_id() }}</td>
+{#                        <td><input type="radio" id="checkbox"> (Tick if you have collected) </td>#}
+                              </tr>
+{#                        <td><form action="{{url_for('delete_collection', id=info.get_info())}}" method="post">#}
+{#                            <input type="submit" value="Yes" class="btn btn-danger" onclick="return confirm('Do you want to delete this item?');">#}
+{#                        </form></td> #}
+{#                        2 different forms for both deliveryman & resident#}
+                {% endfor %}
+
               </tbody>
               </div>
             </table>

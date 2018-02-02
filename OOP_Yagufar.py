@@ -142,14 +142,9 @@ class changePassword(Form):
     confirmpassword = PasswordField('Confirm New Password : ', [validators.DataRequired()])
 
 class RepairForm(Form):
-    chooseService = SelectField('Select A Service', [validators.DataRequired()],
-                                choices=[('', 'Select Here'), ('AIRCON','Air Conditioning'), ('PLUMB', 'Plumbing')],
-                                default='')
-    chooseLocation = TextAreaField('Select A Location', [validators.DataRequired()])
-    chooseDate = StringField('Date (year-month-day)',[validators.DataRequired()])
+    chooseDate = StringField('Date (day-month-year)',[validators.DataRequired()])
     chooseTime = StringField('Time (hour:minute)',[validators.DataRequired()])
     chooseQuest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
-
 
 @app.route('/')
 def home():
@@ -208,18 +203,14 @@ def storage_item():
 def repair_services():
     form = RepairForm(request.form)
     if request.method == 'POST' and form.validate():
-        service = form.chooseService.data
-        location = form.chooseLocation.data
         date = form.chooseDate.data
         time = form.chooseTime.data
         quest = form.chooseQuest.data
-        s1 = Repair(service, location, date, time, quest)
+        s1 = Repair(date, time, quest)
 
         # create the magazine object
         mag_db = root.child('repair')
         mag_db.push({
-            'service': s1.get_chooseService(),
-            'location': s1.get_chooseLocation(),
             'date': s1.get_chooseDate(),
             'time':s1.get_chooseTime(),
             'request': s1.get_chooseQuest(),
@@ -796,12 +787,11 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)
-
-    return render_template('Repair2.html', technicians = list)
+        return render_template('Repair2.html', technicians = list)
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'

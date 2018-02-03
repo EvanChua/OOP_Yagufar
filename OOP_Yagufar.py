@@ -3,8 +3,6 @@ from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, P
 # from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
 from firebase_admin import credentials, db
-from Storage import Storage
-from Repair import Repair
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, FileField,TextField, \
     ValidationError, IntegerField, SelectMultipleField , widgets
 from Storage import Storage,deliveryman, customer
@@ -87,7 +85,7 @@ class StorageForm(Form):
 class StorageForm2(Form):
     recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
     blocknumber = StringField('Block Number: ', [validators.optional()])
-    unitnumber = IntegerField('Unit Number: ', [validators.optional()])
+    unitnumber = StringField('Unit Number: ', [validators.optional()])
 
 
 
@@ -206,6 +204,7 @@ def storagefordelivery():
         ifUserExists = root.child('user').order_by_child('block').equal_to(block).get()
         ifUserExists2 = root.child('user').order_by_child('unit').equal_to(unit).get()
 
+
         if len(ifUserExists)<1:
             flash('User doesnt Exist', ' error')
             return redirect(url_for('storagefordelivery'))
@@ -252,11 +251,39 @@ def storage_item():
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
 
-# @app.route('/delete_collection/<string:id>')
-# def delete_collection():
-#     mag_db = root.child('customer'+ id)
-#     mag_db.delete()
+@app.route('/collectionpg/', methods= ['GET','POST'])
+def collectionpg():
+    mag_db = root.child('customer').get()
+    # mag_db = root.child('customer').order_by_child('recipientName').equal_to(session['recipientName']).get()
+    list = []
+    for info in mag_db:
+        eachinfo = mag_db[info]
+        data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
+        data.set_info(info)
+        print(data.get_info())
+        list.append(data)
+    print(list)
+    # return render_template('collection.html', mag_db= list)
 
+    deliveryman_db = root.child('deliveryman').get()
+    list2 = []
+    for info2 in deliveryman_db:
+        eachinfo2 = deliveryman_db[info2]
+        data2 = deliveryman(eachinfo2['recipientName'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
+        data2.set_info2(info2)
+        print(data2.get_info2())
+        list2.append(data2)
+
+    print(list2)
+    return render_template('collection.html', mag_db=list,deliveryman_db=list2)
+
+@app.route('/delete_collection/<string:id2>',methods= ['POST'])
+def delete_collection(id2):
+    mag_db = root.child('customer'+ id2)
+    mag_db.delete()
+    flash('Record Deleted', 'success')
+
+    return redirect(url_for('/collectionpg/'))
 
 @app.route('/Repair/', methods=['GET', 'POST'])
 def repair_services():
@@ -325,32 +352,7 @@ def Register():
     return render_template('Register2.html', form=form)
     return render_template('Register.html', form=form, list=list)
 
-@app.route('/collectionpg/')
-def collectionpg():
-    mag_db = root.child('customer').get()
-
-    list = []
-    for info in mag_db:
-        eachinfo = mag_db[info]
-        data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
-        data.set_info(info)
-        print(data.get_info())
-        list.append(data)
-    print(list)
-    # return render_template('collection.html', mag_db= list)
-
-    deliveryman_db = root.child('deliveryman').get()
-    list2 = []
-    for info2 in deliveryman_db:
-        eachinfo2 = deliveryman_db[info2]
-        data2 = deliveryman(eachinfo2['recipientName'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
-        data2.set_info2(info2)
-        print(data2.get_info2())
-        list2.append(data2)
-
-    print(list2)
-    return render_template('collection.html', mag_db=list,deliveryman_db=list2)
-    # return render_template('collection.html', mag_db=list2)
+        # return render_template('collection.html', mag_db=list2)
 
 
     # block = request.args.get('block', 111)  # use default value repalce 'None'

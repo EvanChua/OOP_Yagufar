@@ -284,7 +284,7 @@ def Register_Technician():
             phone_number = form.phone_number.data
             occupation = form.occupation.data
             companyname = form.companyname.data
-            type = form.type
+            type = form.type.data
             specialization = ""
             profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
             profile_desc = "Show you know da wae"

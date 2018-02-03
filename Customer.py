@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from .Users import Users
 
 class Customer(Users):

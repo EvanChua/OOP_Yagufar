@@ -12,6 +12,7 @@ from Repair import Repair
 from technician import technician
 from Review import Review
 from Profile import Profile
+from Storage import customer,deliveryman
 import os
 from werkzeug.utils import secure_filename
 
@@ -787,7 +788,7 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'], eachtechnicians["specialization"])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)

@@ -7,12 +7,13 @@ from Storage import Storage
 from Repair import Repair
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, FileField,TextField, \
     ValidationError, IntegerField, SelectMultipleField , widgets
+from Storage import Storage,deliveryman, customer
 from Users import Users
 from Repair import Repair
 from technician import technician
 from Review import Review
 from Profile import Profile
-from Storage import customer,deliveryman
+import random
 import os
 from werkzeug.utils import secure_filename
 
@@ -50,16 +51,43 @@ class RequiredIf(object):
                     validators.Optional().__call__(form, field)
 
 
-class StorageForm(Form):
-    cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
-                      default='')
-    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    blocknumber = IntegerField('Block Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
-    unitnumber = IntegerField('Unit Number: ', [validators.DataRequired(),RequiredIf(cORd='customer')])
-    lockerId = StringField('Locker ID: ', [RequiredIf(cORd='deliveryman')])
-    dateofdelivery = StringField('Date Of Delivery: ', [RequiredIf(cORd='deliveryman')])
+# class UniqueUser(object):
+#     def __init__(self, message="User exists"):
+#         self.message = message
+#
+#     def __call__(self, form, field):
+#         if current_app.security.datastore.find_user(email=field.data):
+#             raise ValidationError(self.message)
+#
+# validators = {
+#     'email': [
+#         Required(),
+#         Email(),
+#         UniqueUser(message='Email address is associated with '
+#                            'an existing account')
+#     ],
+#     'password': [
+#         Required(),
+#         Length(min=6, max=50),
+#         EqualTo('confirm', message='Passwords must match'),
+#         Regexp(r'[A-Za-z0-9@#$%^&+=]',
+#                message='Password contains invalid characters')
+#     ]
+# }
 
-# class StorageForm2(Form):
+
+class StorageForm(Form):
+    # cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
+    #                   default='customer')
+    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    blocknumber = IntegerField('Block Number: ', [validators.optional()])
+    unitnumber = IntegerField('Unit Number: ', [validators.optional()])
+
+
+class StorageForm2(Form):
+    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    blocknumber = StringField('Block Number: ', [validators.optional()])
+    unitnumber = StringField('Unit Number: ', [validators.optional()])
 
 
 
@@ -88,8 +116,8 @@ class RegisterForm_Technician(Form):
 
 
 class Log_InForm(Form):
-    type = SelectField('Role', [validators.DataRequired()],
-                                choices=[('', 'Select Here'), ('R','Residence'), ('T', 'Technician')],
+    type = SelectField('Role: ', [validators.DataRequired()],
+                                choices=[('', 'Select Here'), ('R','Resident'), ('T', 'Technician')],
                                 default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
@@ -147,6 +175,7 @@ class RepairForm(Form):
     chooseTime = StringField('Time (hour:minute)',[validators.DataRequired()])
     chooseQuest = TextAreaField('Have Any Special Request?(Leave empty if not needed')
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -165,12 +194,49 @@ def storage2():
 def storage3():
     return render_template('storage3.html')
 
+@app.route('/storagefordelivery/', methods = ['GET','POST'])
+def storagefordelivery():
+    form2 = StorageForm2(request.form)
+    if request.method == 'POST' and form2.validate():
+
+        recipientName = form2.recipientName.data
+        block = form2.blocknumber.data
+        unit = form2.unitnumber.data
+
+        ifUserExists = root.child('user').order_by_child('block').equal_to(block).get()
+        ifUserExists2 = root.child('user').order_by_child('unit').equal_to(unit).get()
+
+
+        if len(ifUserExists)<1:
+            flash('User doesnt Exist', ' error')
+            return redirect(url_for('storagefordelivery'))
+
+        elif len(ifUserExists2)<1:
+            flash('User doesnt Exist', ' error')
+            return redirect(url_for('storagefordelivery'))
+
+        else:
+            id = random.randint(1, 1000)
+            flash(id , 'success')
+            d = deliveryman(recipientName, block, unit, id)
+            deliveryman_db = root.child('deliveryman')
+            deliveryman_db.push({
+
+                'recipientName': d.get_recipientName(),
+                'blocknumber': d.get_blocknumber(),
+                'unitnumber': d.get_unitnumber(),
+                'id': d.get_id(),
+            })
+
+
+
+
+    return render_template('storagefordelivery.html',form=form2)
 
 @app.route('/Storage/',  methods=['GET', 'POST'])
 def storage_item():
     form = StorageForm(request.form)
     if request.method == 'POST' and form.validate():
-        if form.cORd.data == "customer":
             recipientName = form.recipientName.data
             blocknumber = form.blocknumber.data
             unitnumber = form.unitnumber.data
@@ -184,21 +250,42 @@ def storage_item():
             })
             return redirect(url_for('storage2'))
 
-        elif form.cORd.data == "deliveryman":
-            recipientName = form.recipientName.data
-            lockerId = form.lockerId.data
-            dateofdelivery = form.dateofdelivery.data
-
-            d = deliveryman(recipientName, lockerId, dateofdelivery)
-            deliveryman_db = root.child('deliveryman')
-            deliveryman_db.push({
-                'recipientName': d.get_recipientName(),
-                'lockerId': d.get_lockerId(),
-                'dateofdelivery': d.get_dateofdelivery(),
-            })
-            return redirect(url_for('storage3'))
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
+
+@app.route('/collectionpg/', methods= ['GET','POST'])
+def collectionpg():
+    mag_db = root.child('customer').get()
+    # mag_db = root.child('customer').order_by_child('recipientName').equal_to(session['recipientName']).get()
+    list = []
+    for info in mag_db:
+        eachinfo = mag_db[info]
+        data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
+        data.set_info(info)
+        print(data.get_info())
+        list.append(data)
+    print(list)
+    # return render_template('collection.html', mag_db= list)
+
+    deliveryman_db = root.child('deliveryman').get()
+    list2 = []
+    for info2 in deliveryman_db:
+        eachinfo2 = deliveryman_db[info2]
+        data2 = deliveryman(eachinfo2['recipientName'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
+        data2.set_info2(info2)
+        print(data2.get_info2())
+        list2.append(data2)
+
+    print(list2)
+    return render_template('collection.html', mag_db=list,deliveryman_db=list2)
+
+@app.route('/delete_collection/<string:id2>',methods= ['POST'])
+def delete_collection(id2):
+    mag_db = root.child('customer'+ id2)
+    mag_db.delete()
+    flash('Record Deleted', 'success')
+
+    return redirect(url_for('/collectionpg/'))
 
 @app.route('/Repair/', methods=['GET', 'POST'])
 def repair_services():
@@ -261,9 +348,37 @@ def Register():
                 'profile_desc' :s1.get_profile_desc(),
                 'type': s1.get_type()
             })
+
             return redirect(url_for('Log_In'))
 
     return render_template('Register2.html', form=form)
+    return render_template('Register.html', form=form, list=list)
+
+        # return render_template('collection.html', mag_db=list2)
+
+
+    # block = request.args.get('block', 111)  # use default value repalce 'None'
+    # unit = request.args.get('unit', 111)
+    # #
+    # # print(block)
+    # # print(unit)
+    #
+    # #collectionpg?block=111&unit=111
+    # storageitems = root.child('customer').order_by_child('blocknumber').equal_to(block).get()
+    # list = []
+    # for k, v in storageitems.items():
+    #     print(k, v)
+    #     # print(sha256_crypt.encrypt(password))
+    #     print(v['blocknumber'])
+    #     print(v['unitnumber'])
+    #
+    #     if v['unitnumber'] == unit:
+    #          c = customer(v['recipientName'], v['blocknumber'], v['unitnumber'])
+    #          list.append(c)
+    #
+    #     print(len(list))
+    #         #create the storage object then add into a list, and then pass it to the render_template
+
 
 @app.route('/Register_Technician2/', methods=['GET', 'POST'])
 def Register_Technician():
@@ -272,8 +387,8 @@ def Register_Technician():
         email_address = form.email_address.data
 
         ifUserExists = root.child('Technician_Register').order_by_child('email_address').equal_to(email_address).get()
-
-        if len(ifUserExists) > 0:
+        ifUserExists2 = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
+        if len(ifUserExists) > 0 or len(ifUserExists2) > 0 :
             flash('User Exist', 'danger')
             return redirect(url_for('Register'))
         else:
@@ -365,16 +480,16 @@ def Log_In():
                         session["password"] = password
                         return redirect(url_for('home'))
                     else:
-                        error = 'Wrong Username or Password '
+                        error = 'Invalid login'
                         flash(error, 'danger')
-                        return render_template('Log_In2.html', form=form)
+                        return render_template('Log_In.html', form=form)
         else:
-            error = 'Wrong Username or Password '
+            error = 'Invalid login'
             flash(error, 'danger')
-            return render_template('Log_In2.html', form=form)
+            return render_template('Log_In.html', form=form)
 
 
-    return render_template('Log_In2.html', form=form)
+    return render_template('Log_In.html', form=form)
 
 
 
@@ -405,7 +520,6 @@ def Profile():
     list = []
     for values in details:
         eachvalue = details[values]
-        print(eachvalue)
 
         info = Users(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"], eachvalue["block"], eachvalue["unit"],  eachvalue["type"])
         info.set_profileid(values)
@@ -788,7 +902,7 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'], eachtechnicians["specialization"])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'], eachtechnicians['specialization'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)

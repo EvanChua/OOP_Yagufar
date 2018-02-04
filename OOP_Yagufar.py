@@ -384,6 +384,7 @@ def Register_Technician():
     form = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
         email_address = form.email_address.data
+        username = form.username.data
 
         ifUserExists = root.child('Technician_Register').order_by_child('email_address').equal_to(email_address).get()
         ifUserExists2 = root.child('Technician_Register').order_by_child('username').equal_to(username).get()

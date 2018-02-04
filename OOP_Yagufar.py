@@ -3,8 +3,6 @@ from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, P
 # from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, IntegerField
 import firebase_admin
 from firebase_admin import credentials, db
-from Storage import Storage
-from Repair import Repair
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, PasswordField, validators, FileField,TextField, \
     ValidationError, IntegerField, SelectMultipleField , widgets
 from Storage import Storage,deliveryman, customer
@@ -208,11 +206,11 @@ def storagefordelivery():
 
 
         if len(ifUserExists)<1:
-            flash('User doesnt Exist', ' error')
+            flash('User does not Exist', ' error')
             return redirect(url_for('storagefordelivery'))
 
         elif len(ifUserExists2)<1:
-            flash('User doesnt Exist', ' error')
+            flash('User does not Exist', ' error')
             return redirect(url_for('storagefordelivery'))
 
         else:
@@ -248,7 +246,8 @@ def storage_item():
                 'blocknumber': c.get_blocknumber(),
                 'unitnumber': c.get_unitnumber(),
             })
-            return redirect(url_for('storage2'))
+            flash('Please refer to the collection details page for your locker ID. Thank you! ', 'success')
+            # return redirect(url_for('/Storage/'))
 
         #return render_template('Storage.html', form=form)
     return render_template('Storage.html', form=form)
@@ -267,7 +266,7 @@ def collectionpg():
     print(list)
     # return render_template('collection.html', mag_db= list)
 
-    deliveryman_db = root.child('deliveryman').get()
+    deliveryman_db = root.child('deliveryman').order_by_child("recipientName").equal_to(session["recipientName"]).get()
     list2 = []
     for info2 in deliveryman_db:
         eachinfo2 = deliveryman_db[info2]
@@ -279,14 +278,13 @@ def collectionpg():
     print(list2)
     return render_template('collection.html', mag_db=list,deliveryman_db=list2)
 
-@app.route('/delete_collection/<string:id>',methods= ['POST'])
-def delete_collection(id):
-    mag_db = root.child('customer'+ id)
+@app.route('/delete_collection/<string:id2>',methods= ['POST'])
+def delete_collection(id2):
+    mag_db = root.child('deliveryman/'+ id2)
     mag_db.delete()
     flash('Record Deleted', 'success')
 
     return redirect(url_for('collectionpg'))
-
 
 @app.route('/Repair/', methods=['GET', 'POST'])
 def repair_services():
@@ -455,6 +453,8 @@ def Log_In():
                         session['logged_in'] = True
                         session['username'] = username
                         session["password"] = password
+                        session["recipientName"] = v["name"]
+                        print(session["recipientName"])
                         return redirect(url_for('home'))
                     else:
                         error = 'Wrong Username or Password '

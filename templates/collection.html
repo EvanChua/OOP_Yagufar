@@ -35,6 +35,8 @@ $(document).ready(function () {
 {#                    $('#stuff').show();#}
 {#                }#}
 {#            });#}
+
+
     <head><h2> Collection Details </h2></head>
 
     <body>
@@ -50,27 +52,23 @@ $(document).ready(function () {
                 </thead>
               <tbody>
 
-                {% for infos in mag_db %}
+                {% for infos in deliveryman_db %}
                         <tr id="stuff">
-                <td>{{ infos.get_recipientName() }}</td>
-                <td>{{ infos.get_blocknumber() }} - {{ infos.get_unitnumber() }}</td>
+                    <td>{{ infos.get_recipientName() }}</td>
+                    <td>{{ infos.get_blocknumber() }} - {{ infos.get_unitnumber() }}</td>
 {#                        </tr>#}
-
-                    {% for infos2 in deliveryman_db %}
-                        <td> {{ infos2.get_id() }}</td>
+                        <td> {{ infos.get_id() }}</td>
 {#                        <td><input type="radio" id="checkbox"> (Tick if you have collected) </td>#}
-                    {% endfor %}
-                        <td><form action="{{url_for('delete_collection', id=infos.get_info())}}" method="post">
-                            <input type="submit" value="Tick if you have collected" class="btn btn-danger" onclick="return confirm('Do you want to delete this item?');">
+
+                        <td><form action="{{url_for('delete_collection', id2=infos.get_info2())}}" method="post">
+                            <input type="submit" value="Delete if you have collected" class="btn btn-danger" onclick="return confirm('Do you want to delete this record?');">
                             </form></td>
-                          </tr>
-{#                    {% endfor %}#}
-                {% endfor %}
+                                </tr>
+                    {% endfor %}
+
               </tbody>
               </div>
             </table>
     </body>
-
-
 
 {% endblock %}

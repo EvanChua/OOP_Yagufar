@@ -279,13 +279,14 @@ def collectionpg():
     print(list2)
     return render_template('collection.html', mag_db=list,deliveryman_db=list2)
 
-@app.route('/delete_collection/<string:id2>',methods= ['POST'])
-def delete_collection(id2):
-    mag_db = root.child('customer'+ id2)
+@app.route('/delete_collection/<string:id>',methods= ['POST'])
+def delete_collection(id):
+    mag_db = root.child('customer'+ id)
     mag_db.delete()
     flash('Record Deleted', 'success')
 
-    return redirect(url_for('/collectionpg/'))
+    return redirect(url_for('collectionpg'))
+
 
 @app.route('/Repair/', methods=['GET', 'POST'])
 def repair_services():

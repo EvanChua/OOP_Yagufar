@@ -114,8 +114,8 @@ class RegisterForm_Technician(Form):
 
 
 class Log_InForm(Form):
-    type = SelectField('Role', [validators.DataRequired()],
-                                choices=[('', 'Select Here'), ('R','Residence'), ('T', 'Technician')],
+    type = SelectField('Role: ', [validators.DataRequired()],
+                                choices=[('', 'Select Here'), ('R','Resident'), ('T', 'Technician')],
                                 default='')
     username = StringField('Username: ',[validators.Length(min=1,max=100),validators.DataRequired()])
     password = PasswordField('Password: ',[validators.DataRequired()])
@@ -386,8 +386,8 @@ def Register_Technician():
         email_address = form.email_address.data
 
         ifUserExists = root.child('Technician_Register').order_by_child('email_address').equal_to(email_address).get()
-
-        if len(ifUserExists) > 0:
+        ifUserExists2 = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
+        if len(ifUserExists) > 0 or len(ifUserExists2) > 0 :
             flash('User Exist', 'danger')
             return redirect(url_for('Register'))
         else:
@@ -478,6 +478,7 @@ def Log_In():
                     if username == v['username'] and password == v['password']:
                         session['logged_in_technician'] = True
                         session['username'] = username
+                        session["password"] = password
                         return redirect(url_for('home'))
                     else:
                         error = 'Invalid login'
@@ -514,12 +515,14 @@ def render_review():
 @app.route('/Profile/',  methods=['GET', 'POST'])
 def Profile():
     # form = profileForm(request.form)
-    details = root.child("user").get()
+    details =  root.child('user').order_by_child('username').equal_to(session['username']).get()
+
+
     list = []
     for values in details:
         eachvalue = details[values]
 
-        info = Users(eachvalue["username"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"])
+        info = Users(eachvalue["username"], eachvalue["name"], eachvalue["password"], eachvalue["phone_number"], eachvalue["email_address"], eachvalue["profile_pic"], eachvalue["profile_desc"], eachvalue["block"], eachvalue["unit"],  eachvalue["type"])
         info.set_profileid(values)
         list.append(info)
     print(list)
@@ -900,7 +903,7 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'], eachtechnicians['specialization'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)

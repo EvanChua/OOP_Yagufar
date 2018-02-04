@@ -1,28 +1,71 @@
 {% extends 'layout.html' %}
 {% block body %}
 {% from "includes/_formhelper.html" import render_field %}
+<script>
+$(document).ready(function () {
+    $('#checkbox').change(function () {
+        if (!this.checked)
+            $('#stuff').fadeIn('fast');
+        else
+            $('#stuff').fadeOut('fast');
+    });
+ });
+</script>
+{#$(document).ready(function () {#}
+{#            $('#stuff').show();#}
+{##}
+{##}
+{#            $('input[type="radio"]').click(function () {#}
+{##}
+{#                if ($(this.checked)) {#}
+{#                    $('#stuff').hide();#}
+{#                }#}
+{#                else {#}
+{#                    $('#stuff').show();#}
+{#                }#}
+{#            });})#}
+{#</script>#}
 
-    <head> Collection Details </head>
+{#$('checkbox').change(function () {#}
+{##}
+{#                if ($(this).attr('checked')) {#}
+{#                    $('#stuff').hide();#}
+{#                }#}
+{#                else {#}
+{#                    $('#stuff').show();#}
+{#                }#}
+{#            });#}
+
+
+    <head><h2> Collection Details </h2></head>
 
     <body>
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
               <div>
                 <thead>
                 <tr>
-                  <th> Residents' Name</th>
+                  <th> Residents' Phone Number</th>
                   <th> Block Number - Unit Number</th>
                   <th> Locker ID </th>
+                  <th> Have you collected? </th>
                 </tr>
-              </thead>
+                </thead>
               <tbody>
-                {% for info in user %}
-                <tr>
-                <td>{{ info.get_name() }}</td>
-                <td>{{ info.get_blocknumber() }} - {{ info.get_unitnumber() }}</td>
-{#                <td>{{ info.get_lockerId()}}</td>#}
 
-                {%  endfor %}
-                </tr>
+                {% for infos in deliveryman_db %}
+                        <tr id="stuff">
+                    <td>{{ infos.get_recipientPhone() }}</td>
+                    <td>{{ infos.get_blocknumber() }} - {{ infos.get_unitnumber() }}</td>
+{#                        </tr>#}
+                        <td> {{ infos.get_id() }}</td>
+{#                        <td><input type="radio" id="checkbox"> (Tick if you have collected) </td>#}
+
+                        <td><form action="{{url_for('delete_collection', id2=infos.get_info2())}}" method="post">
+                            <input type="submit" value="Delete if you have collected" class="btn btn-danger" onclick="return confirm('Do you want to delete this record?');">
+                            </form></td>
+                                </tr>
+                    {% endfor %}
+
               </tbody>
               </div>
             </table>

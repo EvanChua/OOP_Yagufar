@@ -18,34 +18,34 @@
     {#            });#}
     {#        });#}
     {#    </script>#}
-    <script>
-        $(document).ready(function () {
-            $('#customer').show();
-            $('#deliveryman').hide();
-
-            $('input[type="radio"]').click(function () {
-
-                if ($(this).attr('value') == 'customer') {
-                    $('#customer').show();
-                    $('#deliveryman').hide();
-                }
-                else {
-                    $('#deliveryman').show();
-                    $('#customer').hide();
-                }
-            });
-
-            var publicationType = $('input[name=cORd]:checked').val();
-
-            if (cORd == 'customer') {
-                $('#customer').show();
-                $('#deliveryman').hide();
-            } else {
-                $('#deliveryman').show();
-                $('#customer').hide();
-            }
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function () {#}
+{#            $('#customer').show();#}
+{#            $('#deliveryman').hide();#}
+{##}
+{#            $('input[type="radio"]').click(function () {#}
+{##}
+{#                if ($(this).attr('value') == 'customer') {#}
+{#                    $('#customer').show();#}
+{#                    $('#deliveryman').hide();#}
+{#                }#}
+{#                else {#}
+{#                    $('#deliveryman').show();#}
+{#                    $('#customer').hide();#}
+{#                }#}
+{#            });#}
+{##}
+{#            var publicationType = $('input[name=cORd]:checked').val();#}
+{##}
+{#            if (cORd == 'customer') {#}
+{#                $('#customer').show();#}
+{#                $('#deliveryman').hide();#}
+{#            } else {#}
+{#                $('#deliveryman').show();#}
+{#                $('#customer').hide();#}
+{#            }#}
+{#        });#}
+{#    </script>#}
 
     {% if form.errors %}
         <div class="alert alert-danger">
@@ -64,29 +64,18 @@
 
         <div class="portfolioContainer">
             <h1 style="text-align: center">
-                Item Storage
+                Item Storage (Resident)
             </h1>
             <div class="boxcontainer" style="padding-left: 200px">
 
-                <div class="form-group">
-                    <div class="form-row">
-                        {{ render_field(form.cORd, class_="radio-inline") }}
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <div class="col-md-9" style="padding-bottom:15px">
-                        {{ render_field(form.recipientName, class_="form-control",placeholder="E.g. John") }}
+                        {{ render_field(form.recipientPhone, class_="form-control",placeholder="91234567") }}
                     </div>
                 </div>
 
                 <div id="customer">
-{#                    <div class="form-group">#}
-{#                        <div class="col-md-9" style="padding-bottom:15px">#}
-{#                            {{ render_field(form.unitnumber,class_='form-control',placeholder="000") }}#}
-{#                        </div>#}
-{#                    </div>#}
-
                     <div class="form-group">
                         <div class="col-md-4" style="padding-bottom:10px">
                             {{ render_field(form.blocknumber,class_='form-control',placeholder="00") }}
@@ -100,33 +89,6 @@
                     <div class="form-group col-md-9" style="padding-top:20px">
                         <input type="submit" value=Submit class="btn btn-info"/>
                     </div>
-                </div>
-
-
-                <div id="deliveryman">
-                    <div class="form-group">
-                        <div class="col-md-9" style="padding-bottom:15px">
-                            {{ render_field(form.lockerId,class_='form-control',placeholder="#1245678") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-9" style="padding-bottom:15px">
-                            {{ render_field(form.dateofdelivery,class_='form-control',placeholder="DD/MM/YYYY") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-9" style="padding-top:20px">
-                        <input type="submit" value=Submit class="btn btn-info"/>
-                    </div>
-
-{#                    <div class="form-group col-md-9" style="padding-top:20px">#}
-                        {#                        <input type="button" {% for emailaddress in customer %} href="mailto:c.get_emailaddress()" {% endif %} value="Send Email" class="btn btn-info"/>#}
-{#                        <input type="button" href="mailto:{{ c.get_emailaddress() }}" value="Send Email"#}
-{#                               class="btn btn-info"/>#}
-{#                    </div>#}
-
-
                 </div>
 
 

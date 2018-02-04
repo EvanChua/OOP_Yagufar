@@ -299,7 +299,8 @@ def repair_services():
         mag_db.push({
             'date': book.get_chooseDate(),
             'quest': book.get_chooseQuest(),
-            'time': book.get_chooseTime()
+            'time': book.get_chooseTime(),
+            'username':session["username"]
         })
         return redirect(url_for('viewBookings2'))
 
@@ -914,7 +915,9 @@ def viewTechnicians():
 
 @app.route('/viewBooking/')
 def viewBookings2():
-    bookings = root.child('repair').get()
+    bookings = root.child('repair').order_by_child("username").equal_to(session["username"]).get()
+
+    # bookings = root.child('repair').get()
     list2 = []
 
     for userid in bookings:
@@ -947,6 +950,7 @@ def viewRequest():
         user.set_userid(userid)
         print(user.get_userid())
         list2.append(user)
+
 
     customers = root.child('user').get()
     list = []

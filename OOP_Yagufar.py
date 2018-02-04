@@ -206,17 +206,15 @@ def repair_services():
         date = form.chooseDate.data
         time = form.chooseTime.data
         quest = form.chooseQuest.data
-        s1 = Repair(date, time, quest)
-
+        book = Repair(date, time, quest)
         # create the magazine object
         mag_db = root.child('repair')
         mag_db.push({
-            'date': s1.get_chooseDate(),
-            'time':s1.get_chooseTime(),
-            'request': s1.get_chooseQuest(),
-
+            'date': book.get_chooseDate(),
+            'quest': book.get_chooseQuest(),
+            'time': book.get_chooseTime()
         })
-        return redirect(url_for('home'))
+        return redirect(url_for('viewBookings2'))
 
     return render_template('Repair.html', form=form)
 
@@ -787,13 +785,63 @@ def viewTechnicians():
 
         eachtechnicians = technicians[profileid]
 
-        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'])
+        worker = technician(eachtechnicians['username'], eachtechnicians['name'], eachtechnicians['password'], eachtechnicians['phone_number'], eachtechnicians['email_address'], eachtechnicians['postal'], eachtechnicians['occupation'], eachtechnicians['companyname'], eachtechnicians['type'], eachtechnicians['profile_pic'], eachtechnicians['profile_desc'], eachtechnicians['specialization'])
         worker.set_profileid(profileid)
         print(worker.get_profileid())
         list.append(worker)
         return render_template('Repair2.html', technicians = list)
 
+@app.route('/viewBooking/')
+def viewBookings2():
+    bookings = root.child('repair').get()
+    list2 = []
+
+    for userid in bookings:
+
+        eachbookings = bookings[userid]
+
+        user = Repair(eachbookings['date'], eachbookings['time'], eachbookings['quest'])
+        user.set_userid(userid)
+        print(user.get_userid())
+        list2.append(user)
+
+    return render_template('viewRepairUser.html', bookings = list2)
+
+@app.route('/delete_Booking/<string:id>', methods=['POST'])
+def delete_Booking(id):
+    mag_db = root.child('repair/' + id)
+    mag_db.delete()
+    flash('Booking Canceled', 'success')
+    return redirect(url_for('viewBookings2'))
+
+@app.route('/viewRequest/')
+def viewRequest():
+    bookings = root.child('repair').get()
+    list2 = []
+    for userid in bookings:
+
+        eachbookings = bookings[userid]
+
+        user = Repair(eachbookings['date'], eachbookings['quest'], eachbookings['time'])
+        user.set_userid(userid)
+        print(user.get_userid())
+        list2.append(user)
+
+    customers = root.child('user').get()
+    list = []
+    for profileid in customers:
+
+        eachcustom = customers[profileid]
+
+        custom = Users(eachcustom["username"], eachcustom["name"], eachcustom["password"], eachcustom["phone_number"],
+              eachcustom["email_address"], eachcustom["profile_pic"], eachcustom["profile_desc"],
+              eachcustom["block"], eachcustom["unit"], eachcustom["type"])
+        custom.set_profileid(profileid)
+        print(custom.get_profileid())
+        list.append(custom)
+
+    return render_template('viewRepairTechnician.html', bookings = list2, customers = list)
+
 if __name__ == '__main__':
     app.secret_key = 'secret123'
     app.run(port="80")
-

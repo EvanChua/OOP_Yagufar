@@ -503,10 +503,14 @@ def render_review():
         s1 = Review(review)
         mag_db = root.child("review")
         mag_db.push({
+            "username": session["username"],
             'review': s1.get_review(),
+            "rating":s1.get_rating(),
+            "companyname":s1.get_rating()
+
 
         })
-        return redirect(url_for('Profile'))
+        flash("Thank You !! We Appreciate your Review :) ","success")
 
 
     return render_template('Review.html', form=form)

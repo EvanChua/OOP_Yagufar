@@ -74,16 +74,16 @@ class RequiredIf(object):
 # }
 
 
-class StorageForm(Form):
-    # cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
-    #                   default='customer')
-    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
-    blocknumber = IntegerField('Block Number: ', [validators.optional()])
-    unitnumber = IntegerField('Unit Number: ', [validators.optional()])
+# class StorageForm(Form):
+#     # cORd = RadioField("Customer or Deliveryman: ", choices=[('customer', 'Customer'), ('deliveryman', 'Deliveryman')],
+#     #                   default='customer')
+#     recipientPhone = StringField('Recipient Phone No.: ',[validators.Length(min=8,max=8),validators.DataRequired()])
+#     blocknumber = IntegerField('Block Number: ', [validators.optional()])
+#     unitnumber = IntegerField('Unit Number: ', [validators.optional()])
 
 
 class StorageForm2(Form):
-    recipientName = StringField('Recipient Name: ', [validators.Length(min=1, max=100), validators.DataRequired()])
+    recipientPhone = StringField('Recipient Phone No.: ',[validators.Length(min=8,max=8),validators.DataRequired()])
     blocknumber = StringField('Block Number: ', [validators.optional()])
     unitnumber = StringField('Unit Number: ', [validators.optional()])
 
@@ -197,7 +197,7 @@ def storagefordelivery():
     form2 = StorageForm2(request.form)
     if request.method == 'POST' and form2.validate():
 
-        recipientName = form2.recipientName.data
+        recipientPhone = form2.recipientPhone.data
         block = form2.blocknumber.data
         unit = form2.unitnumber.data
 
@@ -206,21 +206,21 @@ def storagefordelivery():
 
 
         if len(ifUserExists)<1:
-            flash('User does not Exist', ' error')
+            flash('User does not Exist', ' danger ')
             return redirect(url_for('storagefordelivery'))
 
         elif len(ifUserExists2)<1:
-            flash('User does not Exist', ' error')
+            flash('User does not Exist', ' danger ')
             return redirect(url_for('storagefordelivery'))
 
         else:
             id = random.randint(1, 1000)
             flash(id , 'success')
-            d = deliveryman(recipientName, block, unit, id)
+            d = deliveryman(recipientPhone, block, unit, id)
             deliveryman_db = root.child('deliveryman')
             deliveryman_db.push({
 
-                'recipientName': d.get_recipientName(),
+                'recipientPhone': d.get_recipientPhone(),
                 'blocknumber': d.get_blocknumber(),
                 'unitnumber': d.get_unitnumber(),
                 'id': d.get_id(),
@@ -231,46 +231,46 @@ def storagefordelivery():
 
     return render_template('storagefordelivery.html',form=form2)
 
-@app.route('/Storage/',  methods=['GET', 'POST'])
-def storage_item():
-    form = StorageForm(request.form)
-    if request.method == 'POST' and form.validate():
-            recipientName = form.recipientName.data
-            blocknumber = form.blocknumber.data
-            unitnumber = form.unitnumber.data
-
-            c = customer(recipientName, blocknumber, unitnumber)
-            customer_db = root.child('customer')
-            customer_db.push({
-                'recipientName': c.get_recipientName(),
-                'blocknumber': c.get_blocknumber(),
-                'unitnumber': c.get_unitnumber(),
-            })
-            flash('Please refer to the collection details page for your locker ID. Thank you! ', 'success')
-            # return redirect(url_for('/Storage/'))
-
-        #return render_template('Storage.html', form=form)
-    return render_template('Storage.html', form=form)
+# @app.route('/Storage/',  methods=['GET', 'POST'])
+# def storage_item():
+#     form = StorageForm(request.form)
+#     if request.method == 'POST' and form.validate():
+#             recipientPhone = form.recipientPhone.data
+#             blocknumber = form.blocknumber.data
+#             unitnumber = form.unitnumber.data
+#
+#             c = customer(recipientPhone, blocknumber, unitnumber)
+#             customer_db = root.child('customer')
+#             customer_db.push({
+#                 'recipientPhone': c.get_recipientPhone(),
+#                 'blocknumber': c.get_blocknumber(),
+#                 'unitnumber': c.get_unitnumber(),
+#             })
+#             flash('Please refer to the collection details page for your locker ID. Thank you! ', 'success')
+#             # return redirect(url_for('/Storage/'))
+#
+#         #return render_template('Storage.html', form=form)
+#     return render_template('Storage.html', form=form)
 
 @app.route('/collectionpg/', methods= ['GET','POST'])
 def collectionpg():
-    mag_db = root.child('customer').get()
-    # mag_db = root.child('customer').order_by_child('recipientName').equal_to(session['recipientName']).get()
-    list = []
-    for info in mag_db:
-        eachinfo = mag_db[info]
-        data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
-        data.set_info(info)
-        print(data.get_info())
-        list.append(data)
-    print(list)
+    # mag_db = root.child('customer').get()
+    # # mag_db = root.child('customer').order_by_child('recipientName').equal_to(session['recipientName']).get()
+    # list = []
+    # for info in mag_db:
+    #     eachinfo = mag_db[info]
+    #     data = customer(eachinfo['recipientName'],eachinfo['blocknumber'],eachinfo['unitnumber'])
+    #     data.set_info(info)
+    #     print(data.get_info())
+    #     list.append(data)
+    # print(list)
     # return render_template('collection.html', mag_db= list)
 
-    deliveryman_db = root.child('deliveryman').order_by_child("recipientName").equal_to(session["recipientName"]).get()
+    deliveryman_db = root.child('deliveryman').order_by_child("recipientPhone").equal_to(session["recipientPhone"]).get()
     list2 = []
     for info2 in deliveryman_db:
         eachinfo2 = deliveryman_db[info2]
-        data2 = deliveryman(eachinfo2['recipientName'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
+        data2 = deliveryman(eachinfo2['recipientPhone'],eachinfo2['blocknumber'],eachinfo2['unitnumber'], eachinfo2['id'])
         data2.set_info2(info2)
         print(data2.get_info2())
         list2.append(data2)
@@ -384,6 +384,7 @@ def Register_Technician():
     form = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
         email_address = form.email_address.data
+        username = form.username.data
 
         ifUserExists = root.child('Technician_Register').order_by_child('email_address').equal_to(email_address).get()
         ifUserExists2 = root.child('Technician_Register').order_by_child('username').equal_to(username).get()
@@ -453,8 +454,8 @@ def Log_In():
                         session['logged_in'] = True
                         session['username'] = username
                         session["password"] = password
-                        session["recipientName"] = v["name"]
-                        print(session["recipientName"])
+                        session["recipientPhone"] = v["phone_number"]
+                        print(session["recipientPhone"])
                         return redirect(url_for('home'))
                     else:
                         error = 'Wrong Username or Password '
@@ -483,14 +484,14 @@ def Log_In():
                     else:
                         error = 'Invalid login'
                         flash(error, 'danger')
-                        return render_template('Log_In.html', form=form)
+                        return render_template('Log_In2.html', form=form)
         else:
             error = 'Invalid login'
             flash(error, 'danger')
-            return render_template('Log_In.html', form=form)
+            return render_template('Log_In2.html', form=form)
 
 
-    return render_template('Log_In.html', form=form)
+    return render_template('Log_In2.html', form=form)
 
 
 

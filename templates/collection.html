@@ -44,7 +44,7 @@ $(document).ready(function () {
               <div>
                 <thead>
                 <tr>
-                  <th> Residents' Name</th>
+                  <th> Residents' Phone Number</th>
                   <th> Block Number - Unit Number</th>
                   <th> Locker ID </th>
                   <th> Have you collected? </th>
@@ -54,7 +54,7 @@ $(document).ready(function () {
 
                 {% for infos in deliveryman_db %}
                         <tr id="stuff">
-                    <td>{{ infos.get_recipientName() }}</td>
+                    <td>{{ infos.get_recipientPhone() }}</td>
                     <td>{{ infos.get_blocknumber() }} - {{ infos.get_unitnumber() }}</td>
 {#                        </tr>#}
                         <td> {{ infos.get_id() }}</td>

@@ -1,11 +1,11 @@
 class Storage:
-    def __init__(self, recipientName, blocknumber, unitnumber):
-        self.__recipientName = recipientName
+    def __init__(self, recipientPhone, blocknumber, unitnumber):
+        self.__recipientPhone = recipientPhone
         self.__blocknumber = blocknumber
         self.__unitnumber = unitnumber
 
-    def get_recipientName(self):
-        return self.__recipientName
+    def get_recipientPhone(self):
+        return self.__recipientPhone
 
     def get_blocknumber(self):
         return self.__blocknumber
@@ -13,8 +13,8 @@ class Storage:
     def get_unitnumber(self):
         return self.__unitnumber
 
-    def set_recipientName(self, recipientName):
-        self.__recipientName = recipientName
+    def set_recipientPhone(self, recipientPhone):
+        self.__recipientPhone = recipientPhone
 
     def set_blocknumber(self, blocknumber):
         self.__blocknumber = blocknumber
@@ -26,8 +26,8 @@ class Storage:
 
 
 class customer(Storage):
-    def __init__(self,recipientName,blocknumber,unitnumber):
-        super().__init__(recipientName,blocknumber,unitnumber )
+    def __init__(self,recipientPhone,blocknumber,unitnumber):
+        super().__init__(recipientPhone,blocknumber,unitnumber )
         self.__blocknumber = blocknumber
         self.__unitnumber = unitnumber
     def get_unitnumber(self):
@@ -50,8 +50,8 @@ class customer(Storage):
 
 
 class deliveryman(Storage):
-    def __init__(self, recipientName,lockerId, dateofdelivery, id):
-        super().__init__(recipientName, lockerId, dateofdelivery)
+    def __init__(self, recipientPhone,lockerId, dateofdelivery, id):
+        super().__init__(recipientPhone, lockerId, dateofdelivery)
         self.__lockerId = lockerId
         self.__dateofdelivery = dateofdelivery
         self.__id = id

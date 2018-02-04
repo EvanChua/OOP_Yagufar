@@ -398,7 +398,7 @@ def Register_Technician():
             phone_number = form.phone_number.data
             occupation = form.occupation.data
             companyname = form.companyname.data
-            type = form.type.data
+            type = form.type
             specialization = ""
             profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
             profile_desc = "Show you know da wae"
@@ -501,10 +501,10 @@ def render_review():
         s1 = Review(review)
         mag_db = root.child("review")
         mag_db.push({
-            "username": session["username"],
+            # "username": session["username"],
             'review': s1.get_review(),
-            "rating":s1.get_rating(),
-            "companyname":s1.get_rating()
+            # "rating":s1.get_rating(),
+            # "companyname":s1.get_rating()
 
 
         })

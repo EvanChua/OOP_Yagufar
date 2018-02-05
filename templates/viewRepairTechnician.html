@@ -8,8 +8,6 @@
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>
         <tr>
-            <th>Block</th>
-            <th>Unit</th>
             <th>Date</th>
             <th>Time</th>
             <th>Request</th>
@@ -17,20 +15,17 @@
         </thead>
 
         <tbody>
-{#                <tr>#}<tr>
-                {% for Users in customers %}
-
-                    <td>{{ Users.get_block() }}</td>
-                    <td>{{ Users.get_unit() }}</td>
-                {% for Repair in bookings %}
-                    <td>{{ Repair.get_chooseDate() }}</td>
-                    <td>{{ Repair.get_chooseQuest() }}</td>
-                    <td>{{ Repair.get_chooseTime() }}</td>
-
-                {% endfor %}
-                    </tr>
-                {% endfor %}
-{#                </tr>#}
+        {% for Repair in bookings %}
+            <tr>
+                <td>{{ Repair.get_chooseDate() }}</td>
+                <td>{{ Repair.get_chooseQuest() }}</td>
+                <td>{{ Repair.get_chooseTime() }}</td>
+{#                    {% for Users in customers %}#}
+{#                        <td>{{ Users.get_block }}</td>#}
+{#                        <td>{{ Users.get_unit }}</td>#}
+{#                {% endfor %}#}
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 

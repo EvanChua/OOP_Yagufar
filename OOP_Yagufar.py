@@ -289,14 +289,14 @@ def delete_collection(id2):
 @app.route('/Repair/<string:id>', methods=['GET', 'POST'])
 def repair_services(id):
     form = RepairForm(request.form)
-    form2 = RegisterForm_Technician(request.form)
+    # form2 = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
         date = form.chooseDate.data
         time = form.chooseTime.data
         quest = form.chooseQuest.data
-        username = form2.username.data
-        phone_number = form2.phone_number.data
-        type = form2.type
+        # username = form2.username.data
+        # phone_number = form2.phone_number.data
+        # type = form2.type
         book = Repair(date, time, quest)
         # s1 = technician(phone_number)
         # create the magazine object
@@ -307,7 +307,7 @@ def repair_services(id):
             'time': book.get_chooseTime(),
             'username':session["username"],
             # 'phone_number': s1.get_phone_number(),
-            'technicianid': id
+            'technicianid': id,
         })
         return redirect(url_for('viewBookings2'))
 
@@ -924,7 +924,6 @@ def viewTechnicians():
 @app.route('/viewBooking/')
 def viewBookings2():
     bookings = root.child('repair').order_by_child("username").equal_to(session["username"]).get()
-
     # bookings = root.child('repair').get()
     list2 = []
 
@@ -948,7 +947,7 @@ def delete_Booking(id):
 
 @app.route('/viewRequest/')
 def viewRequest():
-    bookings = root.child('repair').order_by_child('technicianid').equal_to(id).get()
+    bookings = root.child('repair').order_by_child('technicianid').equal_to(session['username']).get()
     list2 = []
     for userid in bookings:
 
@@ -973,7 +972,7 @@ def viewRequest():
     #     print(custom.get_profileid())
     #     list.append(custom)
 
-    return render_template('viewRepairTechnician.html', bookings = list2, customers = list)
+    return render_template('viewRepairTechnician.html', bookings = list2)
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'

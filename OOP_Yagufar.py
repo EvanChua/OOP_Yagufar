@@ -286,21 +286,28 @@ def delete_collection(id2):
 
     return redirect(url_for('collectionpg'))
 
-@app.route('/Repair/', methods=['GET', 'POST'])
-def repair_services():
+@app.route('/Repair/<string:id>', methods=['GET', 'POST'])
+def repair_services(id):
     form = RepairForm(request.form)
+    form2 = RegisterForm_Technician(request.form)
     if request.method == 'POST' and form.validate():
         date = form.chooseDate.data
         time = form.chooseTime.data
         quest = form.chooseQuest.data
+        username = form2.username.data
+        phone_number = form2.phone_number.data
+        type = form2.type
         book = Repair(date, time, quest)
+        # s1 = technician(phone_number)
         # create the magazine object
         mag_db = root.child('repair')
         mag_db.push({
             'date': book.get_chooseDate(),
             'quest': book.get_chooseQuest(),
             'time': book.get_chooseTime(),
-            'username':session["username"]
+            'username':session["username"],
+            # 'phone_number': s1.get_phone_number(),
+            'technicianid': id
         })
         return redirect(url_for('viewBookings2'))
 
@@ -327,7 +334,7 @@ def Register():
             phone_number = form.phone_number.data
             block = form.block.data
             unit = form.unit.data
-            profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
+            profile_pic = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTN47CDq5X6g2sCm0QJv8t2ttYWeA8G4A6KzcNdesvBadW6hfSX"
             profile_desc = "Do you know da wae?"
             type = form.type
             s1 = Users(username, name, password,phone_number, email_address ,  profile_pic, profile_desc,block, unit , type)
@@ -346,7 +353,7 @@ def Register():
                 'profile_desc' :s1.get_profile_desc(),
                 'type': s1.get_type()
             })
-
+            flash(' You have successfully registered',"success" )
             return redirect(url_for('Log_In'))
 
     return render_template('Register2.html', form=form)
@@ -401,7 +408,7 @@ def Register_Technician():
             companyname = form.companyname.data
             type = form.type
             specialization = ""
-            profile_pic = "http://i0.kym-cdn.com/entries/icons/original/000/025/067/ugandanknuck.jpg"
+            profile_pic = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTN47CDq5X6g2sCm0QJv8t2ttYWeA8G4A6KzcNdesvBadW6hfSX"
             profile_desc = "Show you know da wae"
             s1 = technician(username, name, password, phone_number, email_address, occupation, companyname, type,
                  postal, profile_pic, profile_desc , specialization)
@@ -422,6 +429,7 @@ def Register_Technician():
                  "profile_desc":s1.get_profile_desc(),
                  "specialization":s1.get_specialization()
             })
+            flash(' You have successfully registered',"success" )
             return redirect(url_for('Log_In'))
 
     return render_template('Register_Technician2.html', form=form)
@@ -940,7 +948,7 @@ def delete_Booking(id):
 
 @app.route('/viewRequest/')
 def viewRequest():
-    bookings = root.child('repair').get()
+    bookings = root.child('repair').order_by_child('technicianid').equal_to(id).get()
     list2 = []
     for userid in bookings:
 
@@ -952,18 +960,18 @@ def viewRequest():
         list2.append(user)
 
 
-    customers = root.child('user').get()
-    list = []
-    for profileid in customers:
-
-        eachcustom = customers[profileid]
-
-        custom = Users(eachcustom["username"], eachcustom["name"], eachcustom["password"], eachcustom["phone_number"],
-              eachcustom["email_address"], eachcustom["profile_pic"], eachcustom["profile_desc"],
-              eachcustom["block"], eachcustom["unit"], eachcustom["type"])
-        custom.set_profileid(profileid)
-        print(custom.get_profileid())
-        list.append(custom)
+    # customers = root.child('user').get()
+    # list = []
+    # for profileid in customers:
+    #
+    #     eachcustom = customers[profileid]
+    #
+    #     custom = Users(eachcustom["username"], eachcustom["name"], eachcustom["password"], eachcustom["phone_number"],
+    #           eachcustom["email_address"], eachcustom["profile_pic"], eachcustom["profile_desc"],
+    #           eachcustom["block"], eachcustom["unit"], eachcustom["type"])
+    #     custom.set_profileid(profileid)
+    #     print(custom.get_profileid())
+    #     list.append(custom)
 
     return render_template('viewRepairTechnician.html', bookings = list2, customers = list)
 

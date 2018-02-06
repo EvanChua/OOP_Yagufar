@@ -1,13 +1,14 @@
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <header id="header_outer">
   <div class="container">
     <div class="header_section">
-      <div class="logo"><a href="javascript:void(0)"><img src="../static/img/logob.png" alt=""></a></div>
       <nav class="nav" id="nav">
         <ul class="">
           <li><a href="/home/">Home</a></li>
 
           {% if session['logged_in'] %}
-{#              <li><a href="/Storage/">Item Storage</a></li>#}
+              <li><a href="/Storage/">Item Storage</a></li>
               <li><a href="/Repair2/">Repair Services</a></li>
               <li><a href="/viewBooking/">View Bookings</a></li>
               <li><a href="/collectionpg/">Collection Details</a></li>
@@ -30,3 +31,4 @@
       <a class="res-nav_click animated wobble wow"  href="javascript:void(0)"><i class="fa-bars"></i></a> </div>
   </div>
 </header>
+

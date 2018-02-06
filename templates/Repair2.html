@@ -6,7 +6,7 @@
     <h1>View Technicians</h1>
     <br/>
 
-    <table class="'table table-bordered">
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>
         <tr>
             <th>Company Name</th>
@@ -25,7 +25,7 @@
                 <td>{{ technician.get_phone_number() }}</td>
                 <td>{{ technician.get_email_address() }}</td>
                 <td>
-                    <form action="/Repair">
+                    <form action="/Repair/{{ technician.get_username() }}">
                         <input type='submit' class="btn btn-success" value='Booking'>
                     </form>
                 </td>

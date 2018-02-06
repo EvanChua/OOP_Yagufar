@@ -6,95 +6,90 @@
     </title>
 
 
+    <style type="text/css">
+        * { margin: 0; padding: 0; }
+        body {
+            {#font: 16px Helvetica, Sans-Serif; line-height: 24px; #}
+            background: url(../static/img/noise.jpg); }
+        .clear { clear: both; }
+        #page-wrap { width: 800px; margin: 40px auto 60px; font-size:22px; }
+        #pic { float: right; margin: -30px 0 0 0; }
+        h1 { margin: 0 0 16px 0; padding: 0 0 16px 0; font-size: 42px; font-weight: bold; letter-spacing: -2px; border-bottom: 1px solid #999; }
+        h2 { font-size: 20px; margin: 0 0 6px 0; position: relative; }
+        h2 span { position: absolute; bottom: 0; right: 0; font-style: italic; font-family: Georgia, Serif; font-size: 16px; color: #999; font-weight: normal; }
+        p { margin: 0 0 16px 0; }
+        a { color: #999; text-decoration: none; border-bottom: 1px dotted #999; }
+        a:hover { border-bottom-style: solid; color: black; }
+        ul { margin: 0 0 32px 17px; }
+        #objective { width: 500px; float: left; }
+        #objective p { font-family: Georgia, Serif; font-style: italic; color: #666; }
+        dt { font-style: italic; font-weight: bold; font-size: 24px; text-align: right; padding: 0 26px 0 0; width: 150px; float: left; height: 100px; border-right: 1px solid #999;  }
+        dd { width: 600px; float: right; }
+        dd.clear { float: none; margin: 0; height: 15px; }
+     </style>
+
+
 
     <center>
         <h1><p>Company Details</p></h1>
         <br>
     </center>
-    <table class="info" align="center" style="width:35%">
-        {% for i in details %}
 
 
-                <tr>
-                    <td>
-                        {#{%      count = 0
-                      if count == 0: %}#}
-                        {#  <img class="profilepic" id="picture1" src="https://media1.britannica.com/eb-media/58/129958-004-C9B8B89D.jpg" width="200" height="200" style="margin:auto;display:block;">#}
-
-                        {#  {% else: %}#}
-
-                        <img class="profilepic" id="picture1" src="{{ i.get_profile_pic() }}" width="200" height="200"
-                             style="margin:auto;display:block;">
-                        {#{%  endfor %}#}
-                    </td>
-                <tr>
-                    <td>
-                        <h3>Name: {{ i.get_name() }}</h3>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <h3>Phone Number: {{ i.get_phone_number() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Email: {{ i.get_email_address() }}</h3>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <h3>Occupation: {{ i.get_occupation() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Specialization: {{ i.get_specialization() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Company: {{ i.get_companyname() }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Postal Code: {{ i.get_postal() }}</h3>
-                    </td>
-                </tr>
 
 
-                <!--new profile picture-->
-                {#        <input type='file' id="newprofilepic" onchange="readURL(this);" style="display: none;"/>#}
-                <tr>
-                    <td>
-                        <form>
-                            <h3 id="profiledesc" style="padding: 0px">
-                                Description: {{ i.get_profile_desc() }}</h3>
-                        </form>
-                    </td>
-                </tr>
 
+    <div id="page-wrap">
+    {% for i in details %}
+        <img src="{{ i.get_profile_pic() }}" alt="" id="pic" width="200" height="200" />
 
-                <tr>
-                    <td>
-                        <a href="/Edit_Company_Details/{{ i.get_profileid() }}" class="btn btn-info">Edit Details</a>
+        <div id="contact-info" class="vcard">
 
-                        <a href="/Change_Password/{{ i.get_profileid() }}" target=>Change Password</a>
-                    </td>
-                </tr>
+            <!-- Microformats! -->
 
-        {% endfor %}
-    </table>
+            <h1 class="fn">{{ i.get_name() }}</h1>
+        </div>
+
+        <div id="objective">
+            <p>
+                {{ i.get_profile_desc() }}
+            </p>
+        </div>
+
+        <div class="clear"></div>
+
+        <dl>
+            <dd class="clear"></dd>
+
+            <dt>Address</dt>
+            <dd>
+                <strong>Company Name: </strong>{{ i.get_companyname() }} <br/> <br/>
+                <strong>Postal: </strong>{{ i.get_postal() }}
+            </dd>
+
+            <dd class="clear"></dd>
+
+            <dt>Contact</dt>
+            <dd>
+                <strong>Phone Number: </strong>{{ i.get_phone_number() }} <br/> <br/>
+                <strong>Email: </strong>{{ i.get_email_address() }}
+            </dd>
+
+            <dd class="clear"></dd>
+
+            <dt>Skills</dt>
+                <dd>
+                    <strong>Occupation: </strong>{{ i.get_occupation() }} <br/> <br/>
+                    <strong>Specialization: </strong>{{ i.get_specialization() }}
+                </dd>
+        </dl>
+
+        <div class="clear"></div>
+        <a href="/Edit_Company_Details/{{ i.get_profileid() }}" class="btn btn-info" style="font-size:18px;">Edit Details</a>
+
+                        <a href="/Change_Password/{{ i.get_profileid() }}" class='btn btn-primary' style="font-size:18px;" target=>Change Password</a>
+    </div>
+
+    {% endfor %}
 
 {% endblock %}
-
-
-
-
-
-
-
-

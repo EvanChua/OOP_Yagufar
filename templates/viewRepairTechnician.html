@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    {% from "includes/_formhelper.html" import render_field %}
+    <h1>View Bookings (Technician)</h1>
+    <br/>
+
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Request</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for Repair in bookings %}
+            <tr>
+                <td>{{ Repair.get_chooseDate() }}</td>
+                <td>{{ Repair.get_chooseQuest() }}</td>
+                <td>{{ Repair.get_chooseTime() }}</td>
+{#                    {% for Users in customers %}#}
+{#                        <td>{{ Users.get_block }}</td>#}
+{#                        <td>{{ Users.get_unit }}</td>#}
+{#                {% endfor %}#}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

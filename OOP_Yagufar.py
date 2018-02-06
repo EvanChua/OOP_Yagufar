@@ -206,11 +206,11 @@ def storagefordelivery():
 
 
         if len(ifUserExists)<1:
-            flash('User does not Exist', ' danger ')
+            flash('User does not Exist', 'danger')
             return redirect(url_for('storagefordelivery'))
 
         elif len(ifUserExists2)<1:
-            flash('User does not Exist', ' danger ')
+            flash('User does not Exist', 'danger')
             return redirect(url_for('storagefordelivery'))
 
         else:
